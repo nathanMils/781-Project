@@ -12,7 +12,8 @@ seaborn = "^0.13.2"
 matplotlib = "^3.9.2"
 ucimlrepo = "^0.0.7"
 scipy = "^1.14.1"
-sklearn = "^0.0.post12"
+scikit-learn = "^1.5.2"
+ipykernel = "^6.29.5"
 
 
 [build-system]
