@@ -7,6 +7,23 @@
 ### Package Manager: Poetry
 
 ## Project Structure
-... Will add later
+```
+781-Project/
+├── data/
+│   ├── raw/
+│   ├── processed/
+├── notebooks/
+├── src/
+│   ├── __init__.py
+│   ├── data_preprocessing.py
+│   ├── model_training.py
+├── tests/
+│   ├── __init__.py
+│   ├── test_data_preprocessing.py
+│   ├── test_model_training.py
+├── README.md
+├── pyproject.toml
+├── poetry.lock
+```
 
 #### Nathan Opperman u21553832
