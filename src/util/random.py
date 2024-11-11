@@ -1,5 +1,6 @@
 import random
+import numpy as np
 
-def seeded_random_generator(seed):
+def set_seed(seed):
     random.seed(seed)
-    return random
+    np.random.seed(seed)
