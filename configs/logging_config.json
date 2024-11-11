@@ -28,6 +28,26 @@
         "level": "INFO",
         "handlers": ["console"],
         "propagate": false
+      },
+      "util.model_joblib": {
+        "level": "INFO",
+        "handlers": ["console"],
+        "propagate": false
+      },
+      "mlflow": {
+        "level": "INFO",
+        "handlers": ["console"],
+        "propagate": true
+      },
+      "model": {
+        "level": "INFO",
+        "handlers": ["console"],
+        "propagate": true
+      },
+      "model.decision_tree": {
+        "level": "INFO",
+        "handlers": ["console"],
+        "propagate": false
       }
     }
   }

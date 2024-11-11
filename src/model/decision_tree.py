@@ -1,5 +1,9 @@
 from sklearn.tree import DecisionTreeClassifier
 
+import logging
+
+logger = logging.getLogger('model.decision_tree')
+
 
 # class DecisionTreeClassifier(
 #     *,
@@ -33,6 +37,7 @@ class DecisionTree:
             class_weight=None,
             ccp_alpha=0
         ):
+        logger.info("Creating Decision Tree Classifier")
         self.model = DecisionTreeClassifier(
             criterion=criterion,
             splitter=splitter,
