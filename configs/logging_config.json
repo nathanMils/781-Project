@@ -63,6 +63,16 @@
         "level": "INFO",
         "handlers": ["console"],
         "propagate": false
+      },
+      "flask_server": {
+        "level": "INFO",
+        "handlers": ["console"],
+        "propagate": true
+      },
+      "flask_server.app": {
+        "level": "INFO",
+        "handlers": ["console"],
+        "propagate": false
       }
     }
   }

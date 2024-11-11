@@ -1,0 +1,22 @@
+{
+    "manifest_version": 3,
+    "name": "URL Forwarder",
+    "description": "This extension sends the visited URL to a local Flask server.",
+    "version": "1.0",
+    "permissions": [
+      "tabs"
+    ],
+    "host_permissions": [
+      "http://127.0.0.1:5000/"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+      }
+    ]
+  }
+  
