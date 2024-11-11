@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: sigkddExp.aux
+Reallocating 'name_of_file' (item size: 1) to 6 items.
+The style file: abbrv.bst
+Reallocating 'name_of_file' (item size: 1) to 8 items.
+Database file #1: sigproc.bib
+You've used 6 entries,
+            2118 wiz_defined-function locations,
+            535 strings with 4304 characters,
+and the built_in function-call counts, 1552 in all, are:
+= -- 146
+> -- 54
+< -- 0
++ -- 23
+- -- 16
+* -- 90
+:= -- 272
+add.period$ -- 18
+call.type$ -- 6
+change.case$ -- 25
+chr.to.int$ -- 0
+cite$ -- 6
+duplicate$ -- 70
+empty$ -- 143
+format.name$ -- 16
+if$ -- 327
+int.to.chr$ -- 0
+int.to.str$ -- 6
+missing$ -- 10
+newline$ -- 33
+num.names$ -- 12
+pop$ -- 35
+preamble$ -- 1
+purify$ -- 20
+quote$ -- 0
+skip$ -- 40
+stack$ -- 0
+substring$ -- 73
+swap$ -- 6
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 16
+warning$ -- 0
+while$ -- 14
+width$ -- 7
+write$ -- 67

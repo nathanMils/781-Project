@@ -1,0 +1,34 @@
+\begin{thebibliography}{1}
+
+\bibitem{bowman:reasoning}
+J.~Bowman.
+\newblock Reasoning with logic: A guide.
+\newblock {\em Journal of Logical Reasoning}, 10(2):123--134, 1995.
+
+\bibitem{braams:babel}
+S.~J. Braams.
+\newblock {\em Understanding Babel: A Comprehensive Guide}.
+\newblock Publishing House, 1997.
+
+\bibitem{clark:pct}
+S.~Clark.
+\newblock Principles of computer theory.
+\newblock {\em International Journal of Theoretical Computer Science},
+  15(4):345--356, 1998.
+
+\bibitem{herlihy:methodology}
+M.~Herlihy and S.~Rajasekaran.
+\newblock {\em The Methodology of Computer Science}.
+\newblock Tech Publishers, 3rd edition, 2000.
+
+\bibitem{Lamport:LaTeX}
+L.~Lamport.
+\newblock {\em LaTeX: A Document Preparation System}.
+\newblock Addison-Wesley, 2nd edition, 1986.
+
+\bibitem{salas:calculus}
+S.~Salas and E.~Hille.
+\newblock {\em Calculus: One and Several Variables}.
+\newblock Wiley, 7th edition, 1990.
+
+\end{thebibliography}
