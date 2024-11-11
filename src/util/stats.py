@@ -148,10 +148,8 @@ def mapping_function(feature_name, value):
             return "Unknown value"
     else:
         return "Unknown feature"
-    
 
-IMAGES_DIR = "../../images"
-
+IMAGES_DIR = "../../docs/images"
 
 def draw_pie(data, feature, dimensions=(6, 6)):
     logger.info(f"Drawing pie chart for '{feature}'")

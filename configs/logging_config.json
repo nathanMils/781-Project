@@ -34,6 +34,21 @@
         "handlers": ["console"],
         "propagate": false
       },
+      "util.tabulate": {
+        "level": "INFO",
+        "handlers": ["console"],
+        "propagate": false
+      },
+      "process": {
+        "level": "INFO",
+        "handlers": ["console"],
+        "propagate": true
+      },
+      "process.determine": {
+        "level": "INFO",
+        "handlers": ["console"],
+        "propagate": false
+      },
       "mlflow": {
         "level": "INFO",
         "handlers": ["console"],

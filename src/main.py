@@ -6,6 +6,10 @@ def configure():
     setup_logging()
     set_seed(SEED)
 
+def start_server():
+    # Start the flask server
+    pass
+
 def main():
     print("Hello, COS 781 Project!")
     data = fetch_data_local()
