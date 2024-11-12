@@ -1,21 +1,23 @@
 from urllib.parse import urlparse
 import re
 import whois
+import ssl
+import socket
 from datetime import datetime
-
-# Helper functions
-from ssl import get_certificate_info
-# from favicon import get_favicon_domain
+import requests
+from urllib.parse import urlparse, urljoin
+from bs4 import BeautifulSoup
+import pandas as pd
+import os
+import json
 
 import logging
 
 logger = logging.getLogger('process.determine')
 
+from dotenv import load_dotenv
+load_dotenv()
 
-def is_phishing(model, url):
-    """Determines if a URL is a phishing website or not."""
-    # Placeholder for actual implementation
-    pass
 
 ## ADDRESS BAR BASED FEATURES #########################################################
 
@@ -141,72 +143,86 @@ def is_having_sub_domain(url):
 ## RULE: HTTPS (Hyper Text Transfer Protocol with Secure Sockets Layer)
 ## STATUS: FINISHED
 ## List of trusted Certificate Authorities
-trusted_cas = ['GeoTrust', 'GoDaddy', 'Network Solutions', 'Thawte', 'Comodo', 'Doster', 'VeriSign']
+TRUSTED_ISSUER_KEYWORDS = {
+    "GeoTrust", "GoDaddy", "Network Solutions", "Thawte",
+    "Comodo", "Doster", "VeriSign", "DigiCert", "WR2"
+}
+
+def is_trusted_issuer(issuer_common_name):
+    return any(keyword in issuer_common_name for keyword in TRUSTED_ISSUER_KEYWORDS)
 def is_https(url):
     """Determines if the URL uses HTTPS."""
-    parsed_url = urlparse(url)
-    domain = parsed_url.netloc or parsed_url.path.split('/')[0]
+    try:
+        hostname = url.replace("https://", "").replace("http://", "").split('/')[0]
 
-    if parsed_url.scheme != 'https':
+        context = ssl.create_default_context()
+        with socket.create_connection((hostname, 443)) as sock:
+            with context.wrap_socket(sock, server_hostname=hostname) as ssock:
+                cert = ssock.getpeercert()
+
+        issuer = dict(x[0] for x in cert['issuer'])
+        issuer_common_name = issuer.get('commonName', '')
+
+        if not cert:
+            return 1
+
+        if not is_trusted_issuer(issuer_common_name):
+            return 0
+
+
+        valid_from = datetime.strptime(cert['notBefore'], '%b %d %H:%M:%S %Y %Z')
+
+
+        age_in_years = (datetime.now() - valid_from).days / 365.25
+
+        if age_in_years >= 1:
+            return 1
+        else:
+            return 0
+
+    except Exception:
         return -1
-    
-    certificate_issuer, certificate_age = get_certificate_info(domain)
-
-    if certificate_issuer is None or certificate_age is None:
-        return -1
-
-    if certificate_issuer in trusted_cas and certificate_age >= 1:
-        return 1
-    elif certificate_issuer not in trusted_cas:
-        return 0
-    else:
-        return -1
-
-
-TODAY = datetime.now()
 
 ## RULE: Domain Registration Length
 ## STATUS: FINISHED
-def is_domain_registration_length(url):
+def is_domain_registration_length(domain):
     """Determines if the URL's domain registration length is suspicious."""
-    try:
-        domain = whois.whois(url)
-        creation_date = domain.creation_date
-        expiration_date = domain.expiration_date
+    creation_date = domain.creation_date
+    expiration_date = domain.expiration_date
 
-        if isinstance(creation_date, list):
-            creation_date = creation_date[0]
-        if isinstance(expiration_date, list):
-            expiration_date = expiration_date[0]
+    if isinstance(creation_date, list):
+        creation_date = creation_date[0]
+    if isinstance(expiration_date, list):
+        expiration_date = expiration_date[0]
 
-        if creation_date and expiration_date:
-            registration_length = (expiration_date - creation_date).days / 365
-            if registration_length < 1:
-                logger.debug(f"URL: {url} has a suspicious domain registration length of {registration_length} years.")
-                return -1
-            else:
-                logger.debug(f"URL: {url} has a domain registration length of {registration_length} years.")
-                return 1
+    if creation_date and expiration_date:
+        registration_length = (expiration_date - creation_date).days / 365
+        if registration_length < 1:
+            return -1
         else:
-            logger.debug(f"URL: {url} does not have valid creation or expiration dates.")
-            return "ERROR"
-    except Exception as e:
-        logger.error(f"Error occurred while determining the domain registration length for URL: {url}. Exception: {e}")
-        return "UNKNOWN"
+            return 1
+    else:
+        return -1
 
-## RULE: Favicon
-## STATUS: NOT DONE
-def is_favicon(url):
+## RULE
+## STATUS: FINISHED
+def is_favicon(url, soup):
     """Determines if the URL has a favicon."""
-    favicon_domain, page_domain = get_favicon_domain(url)
     
-    if favicon_domain is None:
+    main_domain = urlparse(url).netloc
+    
+    favicon_link = soup.find("link", rel=lambda value: value and 'icon' in value.lower())
+    
+    if not favicon_link or not favicon_link.get("href"):
         return 1
     
-    if favicon_domain != page_domain:
-        return -1
+    favicon_url = urljoin(url, favicon_link.get("href"))
+    favicon_domain = urlparse(favicon_url).netloc
     
-    return 1
+    if favicon_domain == main_domain:
+        return 1
+    else:
+        return -1
 
 ## RULE: Using Non-Standard Port
 ## STATUS: FINISHED
@@ -253,137 +269,459 @@ def is_https_token(url):
 ## ABNORMAL BASED FEATURES #############################################################
 
 ## RULE: Request URL
-## STATUS: NOT STARTED
-def is_request_url(url):
+## STATUS: FINISHED
+def is_request_url(url,soup):
     """Determines if the request URL is legitimate."""
-    # Placeholder for actual implementation
-    pass
+    base_domain = urlparse(url).netloc
+
+    resource_tags = {
+        'img': 'src',
+        'script': 'src',
+        'link': 'href',
+        'iframe': 'src',
+        'audio': 'src',
+        'video': 'src',
+        'object': 'data',
+    }
+
+    total_resources = 0
+    external_resources = 0
+
+    for tag, attribute in resource_tags.items():
+        for element in soup.find_all(tag):
+            resource = element.get(attribute)
+            if resource:
+                total_resources += 1
+                resource_url = urljoin(url, resource)
+                resource_domain = urlparse(resource_url).netloc
+
+                if resource_domain and resource_domain != base_domain:
+                    external_resources += 1
+
+    if total_resources == 0:
+        return 1
+
+    external_percentage = (external_resources / total_resources) * 100
+
+    if external_percentage < 22:
+        return 1
+    elif 22 <= external_percentage < 61:
+        return 0
+    else:
+        return -1
 
 ## RULE: URL of Anchor
-## STATUS: NOT STARTED
-def is_url_of_anchor(url):
+## STATUS: FINISHED
+def is_url_of_anchor(url, soup):
     """Determines if the URL of the anchor is suspicious."""
-    # Placeholder for actual implementation
-    pass
+    base_domain = urlparse(url).netloc
+
+    total_anchors = 0
+    external_anchors = 0
+
+    for anchor in soup.find_all('a'):
+        href = anchor.get('href')
+        if href:
+            if href in ['#', '#content', '#skip', 'JavaScript:void(0)', 'javascript:void(0)', '']:
+                continue
+
+            total_anchors += 1
+            anchor_url = urljoin(url, href)
+            anchor_domain = urlparse(anchor_url).netloc
+
+            if anchor_domain and anchor_domain != base_domain:
+                external_anchors += 1
+
+    if total_anchors == 0:
+        return 1
+
+    external_percentage = (external_anchors / total_anchors) * 100
+
+    if external_percentage < 31:
+        return 1
+    elif 31 <= external_percentage <= 67:
+        return 0
+    else:
+        return -1
 
 ## RULE: Links in Meta, Script and Link Tags
-## STATUS: NOT STARTED
-def is_links_in_tags(url):
+## STATUS: FINISHED
+def is_links_in_tags(url, soup):
     """Determines if the links in meta, script, and link tags are suspicious."""
-    # Placeholder for actual implementation
-    pass
+    base_domain = urlparse(url).netloc
+    total_links = 0
+    external_links = 0
+    tags_to_check = soup.find_all(['meta', 'script', 'link'])
+    for tag in tags_to_check:
+        href_or_src = tag.get('href') or tag.get('src')
+        if href_or_src:
+            total_links += 1
+            full_url = urljoin(url, href_or_src)
+            external_domain = urlparse(full_url).netloc
+            if external_domain and external_domain != base_domain:
+                external_links += 1
+    if total_links == 0:
+        return 1
+
+    external_percentage = (external_links / total_links) * 100
+
+    if external_percentage < 17:
+        return 1
+    elif 17 <= external_percentage <= 81:
+        return 0
+    else:
+        return -1
 
 ## RULE: Server Form Handler (SFH)
-## STATUS: NOT STARTED
-def is_sfh(url):
+## STATUS: FINISHED
+def is_sfh(url, soup):
     """Determines if the server form handler is suspicious."""
-    # Placeholder for actual implementation
-    pass
+    base_domain = urlparse(url).netloc
+
+    forms = soup.find_all('form')
+    
+    for form in forms:
+        sfh = form.get('action')
+        
+        if not sfh:
+            return -1
+        
+        full_sfh = urljoin(url, sfh)
+        action_domain = urlparse(full_sfh).netloc
+        
+        if sfh == "" or sfh == "about:blank":
+            return 1
+        if action_domain != base_domain:
+            return 0
+    
+    return 1
 
 ## RULE: Submitting Information to Email
-## STATUS: NOT STARTED
-def is_submitting_to_email(url):
+## STATUS: FINISHED
+def is_submitting_to_email(response, soup):
     """Determines if the URL submits information to an email."""
-    # Placeholder for actual implementation
-    pass
+    if 'mail()' in response.text:
+        return -1
+    
+    for form in soup.find_all('form'):
+        action = form.get('action', '')
+        if 'mailto:' in action:
+            return -1
+    
+    for link in soup.find_all('a'):
+        href = link.get('href', '')
+        if 'mailto:' in href:
+            return -1
+
+    return 1
+
+def is_submitting_to_email_direct(html, soup):
+    """Determines if the URL submits information to an email."""
+    if 'mail()' in html:
+        return -1
+    
+    for form in soup.find_all('form'):
+        action = form.get('action', '')
+        if 'mailto:' in action:
+            return -1
+    
+    for link in soup.find_all('a'):
+        href = link.get('href', '')
+        if 'mailto:' in href:
+            return -1
+
+    return 1
+
 
 ## RULE: Abnormal URL
-## STATUS: NOT STARTED
+## STATUS: FINISHED
 def is_abnormal_url(url):
     """Determines if the URL is abnormal."""
-    # Placeholder for actual implementation
-    pass
+    parsed_url = urlparse(url)
+    host_name = parsed_url.netloc
+    if not host_name:
+        return -1
+    if "." in host_name and len(host_name.split('.')) > 1:
+        return 1
+    return -1
 
 
 ########################################################################################
 ## HTML AND JAVASCRIPT BASED FEATURES ##################################################
 
 ## RULE: Website Forwarding
-## STATUS: NOT STARTED
-def is_redirect(url):
+## STATUS: FINISHED
+def is_redirect(response):
     """Determines if the URL forwards to another URL."""
-    # Placeholder for actual implementation
-    pass
+    num_redirects = len(response.history)
+        
+    # Apply the rule based on the number of redirects
+    if num_redirects <= 1:
+        return 1
+    elif 2 <= num_redirects < 4:
+        return 0
+    else:
+        return -1
 
 ## RULE: Status Bar Customization
-## STATUS: NOT STARTED
-def is_on_mouseover(url):
+## STATUS: FINISHED
+def is_on_mouseover(soup):
     """Determines if the URL has status bar customization."""
-    # Placeholder for actual implementation
-    pass
+    onmouseover_events = soup.find_all(attrs={"onmouseover": True})
+        
+    for event in onmouseover_events:
+        if re.search(r'window\.status', event['onmouseover']):
+            return -1
+    return 1
 
 ## RULE: Disabling Right Click
-## STATUS: NOT STARTED
-def is_rightclick(url):
+## STATUS: FINISHED
+def is_rightclick(soup):
     """Determines if the URL disables right-clicking."""
-    # Placeholder for actual implementation
-    pass
+    script_tags = soup.find_all('script', string=True)
+    for script in script_tags:
+        if re.search(r'event\.button\s*==\s*2', script.string) or re.search(r'contextmenu', script.string):
+            return -1
+    return 1
 
 ## RULE: Pop-up Windows
-## STATUS: NOT STARTED
-def is_popupwindow(url):
+## STATUS: FINISHED
+def is_popupwindow(soup):
     """Determines if the URL uses pop-up windows."""
-    # Placeholder for actual implementation
-    pass
+    pop_up_scripts = soup.find_all('script', string=re.compile('window\.open', re.IGNORECASE))
+    input_elements = soup.find_all(['input', 'textarea', 'select'])
+    
+    for pop_up_script in pop_up_scripts:
+        if any(input_elem in pop_up_script for input_elem in input_elements):
+            return -1
+    
+    return 1
 
 ## RULE: IFrame Redirection
-## STATUS: NOT STARTED
-def is_iframe(url):
+## STATUS: FINISHED
+def is_iframe(soup):
     """Determines if the URL uses an iframe."""
-    # Placeholder for actual implementation
-    pass
+    if soup.find_all('iframe'):
+        return -1
+    return 1
 
 ########################################################################################
 ## DOMAIN BASED FEATURES ###############################################################
 
 ## RULE: Age of Domain
-## STATUS: NOT STARTED
-def is_age_of_domain(url):
+## STATUS: FINISHED
+def is_age_of_domain(domain):
     """Determines if the URL's domain age is suspicious."""
-    # Placeholder for actual implementation
-    pass
+    if domain.creation_date:
+        if isinstance(domain.creation_date, list):
+            creation_date = domain.creation_date[0]
+        else:
+            creation_date = domain.creation_date
+
+        current_date = datetime.now()
+
+        age_in_months = (current_date.year - creation_date.year) * 12 + current_date.month - creation_date.month
+
+        if age_in_months >= 6:
+            return 1
+        else:
+            return -1
+    else:
+        return -1
 
 ## RULE: DNS Record
-## STATUS: NOT STARTED
-def is_dns_record(url):
+## STATUS: FINISHED
+def is_dns_record(domain):
     """Determines if the URL has a DNS record."""
-    # Placeholder for actual implementation
-    pass
+    if domain.domain_name:
+        # If the domain has information, we assume it's legitimate
+        return 1
+    else:
+        return -1
+
+
+api_key = os.getenv('DIGITAL_RANK_API_KEY')
+
+def get_digital_rank(domain):
+    try:
+        if domain.startswith("www."):
+            domain = domain[4:]
+            
+        url = f"https://api.similarweb.com/v1/similar-rank/{domain}/rank?api_key={api_key}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return None
+    except Exception:
+        logger.error(f"Error occurred while fetching digital rank for domain: {domain}")
+        return None
 
 ## RULE: Web Traffic
-## STATUS: NOT STARTED
+## STATUS: FINISHED
 def is_web_traffic(url):
     """Determines if the URL has suspicious web traffic."""
-    # Placeholder for actual implementation
-    pass
+    url = urlparse(url)
+    domain = url.netloc
+    data = get_digital_rank(domain)
+    if data is None:
+        return -1
+    global_rank = data.get("similar_rank", {}).get("rank", None)
+        
+    if global_rank is not None:
+        if global_rank < 100000:
+            return 1
+        else:
+            return 0
+    else:
+        return -1
+    
+def get_open_page_rank(domain):
+    try:
+        if domain.startswith("www."):
+            domain = domain[4:]
+        url = "https://openpagerank.com/api/v1.0/getPageRank"
+        params = {
+            "domains[]": domain
+        }
+
+        headers = {
+            "API-OPR": os.getenv('OPEN_PAGE_RANK_API_KEY')
+        }
+
+        response = requests.get(url, params=params, headers=headers)
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return None
+    except Exception:
+        logger.error(f"Error occurred while fetching Open Page Rank for domain: {domain}")
+        return None
 
 ## RULE: Page Rank
-## STATUS: NOT STARTED
+## STATUS: FINISHED
 def is_page_rank(url):
     """Determines if the URL has a suspicious page rank."""
-    # Placeholder for actual implementation
-    pass
+    domain = urlparse(url).netloc
+    
+    data = get_open_page_rank(domain)
+    page_rank = data.get('response', [{}])[0].get('page_rank_decimal', None)
+    
+    if page_rank is None:
+        return -1
+    elif page_rank < 0.2:
+        return -1
+    else:
+        return 1
 
-## RULE: Google Index
-## STATUS: NOT STARTED
+
+SERP_API_KEY = os.getenv('SERP_API_KEY')
+
+def is_website_indexed(domain):
+    try:
+        url = "https://google.serper.dev/search"
+
+        query = f"site:{domain}"
+        payload = json.dumps({
+            "q": query
+        })
+        headers = {
+            'X-API-KEY': SERP_API_KEY,
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            logger.error(f"An error occurred: {response.text}")
+            return False
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+        return False
+
+# RULE: Google Index
+# STATUS: FINISHED
 def is_google_index(url):
     """Determines if the URL is indexed by Google."""
-    # Placeholder for actual implementation
-    pass
+    domain = urlparse(url).netloc
+
+    if domain.startswith("www."):
+        domain = domain[4:]
+
+    data = is_website_indexed(domain)
+
+    if not data:
+        return -1
+    
+    if "organic" in data and len(data["organic"]) > 0:
+        return 1
+    else:
+        return -1
 
 ## RULE: Number of Links Pointing to Page
-## STATUS: NOT STARTED
-def is_links_pointing_to_page(url):
+## STATUS: FINISHED
+def is_links_pointing_to_page(url, soup):
     """Determines if the URL has a suspicious number of links pointing to the page."""
-    # Placeholder for actual implementation
-    pass
+
+    links = soup.find_all('a', href=True)
+    domain = urlparse(url).netloc
+    external_links_count = 0
+    for link in links:
+        href = link.get('href')
+        if href:
+            href_domain = urlparse(href).netloc
+            if href_domain and href_domain != domain:
+                external_links_count += 1
+
+    if external_links_count == 0:
+        return -1
+    elif 0 < external_links_count <= 2:
+        return 0
+    else:
+        return 1
 
 ## RULE: Statistical Reports
-## STATUS: NOT STARTED
-def is_statistical_report(url):
-    """Determines if the URL has a suspicious statistical report."""
-    # Placeholder for actual implementation
-    pass
+## STATUS: FINISHED
+## List of top phishing domains and IPs
+top_phishing_domains = [
+    ".uno", ".sbs", ".best", ".beauty", ".top", ".hair", ".monster", ".cyou", ".wiki", ".makeup"
+]
+
+
+top_phishing_ips = [
+    "156.146.62.218", "212.102.57.68", "138.199.18.156", "199.167.138.22", 
+    "178.159.37.4", "178.159.37.17", "185.190.42.200", "178.159.37.34", 
+    "89.234.157.254", "190.2.131.167", "185.236.200.42", "62.122.184.194", 
+    "196.196.53.142", "178.159.37.11", "195.176.3.23", "94.230.208.147", 
+    "35.0.127.52", "93.157.254.39", "178.159.37.55", "31.173.87.149",
+    "118.107.16.194", "45.43.63.15", "122.230.47.69", "185.228.234.120", 
+    "185.247.118.151", "107.172.143.65", "194.37.82.149", "103.240.252.87", 
+    "77.222.46.175", "131.108.17.87", "93.190.10.18", "103.18.103.50", 
+    "103.18.103.5", "165.154.184.8", "193.233.237.13", "212.230.134.27", 
+    "192.92.97.185", "190.247.243.99", "216.117.133.168", "123.190.180.241", 
+    "103.102.177.230", "57.128.225.168", "181.229.154.222", "209.85.214.193", 
+    "103.25.90.29"
+]
+
+
+def is_statistical_report(url, domain_info):
+    """Determines if the URL has a suspicious statistical report based on phishing domains or IPs."""
+    domain = urlparse(url).netloc
+
+    for phishing_domain in top_phishing_domains:
+        if phishing_domain.lower() in domain.lower():
+            return -1
+
+    ip_address = domain_info.get('ips', [])
+    if ip_address and ip_address[0] in top_phishing_ips:
+        return -1
+
+    return 1
+
 
 ########################################################################################
 
@@ -394,63 +732,238 @@ def check_if_valid(url):
         return all([parsed_url.scheme, parsed_url.netloc])
     except Exception:
         return False
-
-if __name__ == "__main__":
-    test_urls = [
-        "http://125.98.3.123/fake.html",
-        "http://0x58.0xCC.0xCA.0x62/2/paypal.ca/index.html",
-        "http://example.com",
-        "http://bit.ly/2xT",
-        "http://example.com/this-is-a-very-long-url-that-should-be-considered-suspicious-because-it-is-over-54-characters-long",
-        "http://short.url",
-        "http://user:password@example.com",
-        "https://legit-website.com",
-        "ftp://admin:admin@phishing-site.com",
-        "http://www.legitimate.com",
-        "http://www.legitimate.com//http://www.phishing.com",
-        "https://secure-site.com",
-        "https://example.com//http://another-phishing.com",
-        "http://normal-site.com/some/path",
-        "http://www.paypal.com",
-        "http://www.Confirme-paypal.com",
-        "https://legitimate-site.com",
-        "http://fake-paypal-secure.com",
-        "http://secure-login.example.com",
-        "http://www.hud.ac.uk/students/",
-        "http://www.paypal.com",
-        "http://secure.paypal.com",
-        "http://subdomain.paypal.com",
-        "http://www.fake.paypal.com",
-        "http://example.co.uk",
-        "http://www.subdomain.subdomain.com",
-        "http://www.example.edu",
-        "http://www.hud.ac.uk/students/",
-        "http://a.b.example.com/",
-        "https://www.example.com",
-        "http://example.com:80",       # Expected: Legitimate (Standard HTTP port)
-        "https://example.com:443",     # Expected: Legitimate (Standard HTTPS port)
-        "http://example.com:8080",     # Expected: Phishing (Non-standard port)
-        "ftp://example.com:21",
-        "http://https-www-paypal-it-webapps-mpp-home.soft-hair.com/",
-        "https://example.com/",
-        "http://example.com/"
-    ]
     
-    for url in test_urls:
-        if not check_if_valid(url):
-            print(f"Invalid URL: {url}")
-            continue
-        print(f"Testing URL: {url}")
-        print(f"Is having IP: {is_having_ip(url)}")
-        print(f"Is URL long: {is_url_long(url)}")
-        #print(f"Is domain registration length: {is_domain_registration_length(url)}")
-        print(f"Is shortening service: {is_shortening_service(url)}")
-        print(f"Is having '@' symbol: {is_having_at_symbol(url)}")
-        print(f"Is double: {is_double(url)}")
-        print(f"Is prefix suffix: {is_prefix_suffix(url)}")
-        print(f"Is having sub domain: {is_having_sub_domain(url)}")
-        print(f"Is HTTPS: {is_https(url)}")
-        # print(f"Is favicon: {is_favicon(url)}")
-        print(f"Is port: {is_port(url)}")
-        print(f"Is HTTPS token: {is_https_token(url)}")
-        print()
+def check_if_reachable(url):
+    """Checks if the URL is reachable."""
+    try:
+        response = requests.get(url)
+        return response
+    except Exception:
+        return False
+    
+# May adjust such that local extension sends html content directly, more accurate and more efficient
+def parse_html(response):
+    """Parses the HTML content of a URL."""
+    try:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        return soup
+    except Exception:
+        return False
+    
+def parse_html_direct(html):
+    """Parses the HTML content of a URL."""
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+        return soup
+    except Exception:
+        return False
+    
+def get_whois(url):
+    """Gets the WHOIS information of a URL."""
+    try:
+        domain = whois.whois(url)
+        return domain
+    except Exception:
+        return False
+
+# if __name__ == "__main__":
+#     test_urls = [
+#         # "http://125.98.3.123/fake.html",
+#         # "http://0x58.0xCC.0xCA.0x62/2/paypal.ca/index.html",
+#         # "http://example.com",
+#         # "http://bit.ly/2xT",
+#         # "http://example.com/this-is-a-very-long-url-that-should-be-considered-suspicious-because-it-is-over-54-characters-long",
+#         # "http://short.url",
+#         # "http://user:password@example.com",
+#         # "https://legit-website.com",
+#         # "ftp://admin:admin@phishing-site.com",
+#         # "http://www.legitimate.com",
+#         # "http://www.legitimate.com//http://www.phishing.com",
+#         # "https://secure-site.com",
+#         # "https://example.com//http://another-phishing.com",
+#         # "http://normal-site.com/some/path",
+#         # "http://www.paypal.com",
+#         # "http://www.Confirme-paypal.com",
+#         # "https://legitimate-site.com",
+#         # "http://fake-paypal-secure.com",
+#         # "http://secure-login.example.com",
+#         # "http://www.hud.ac.uk/students/",
+#         # "http://www.paypal.com",
+#         # "http://secure.paypal.com",
+#         # "http://subdomain.paypal.com",
+#         # "http://www.fake.paypal.com",
+#         # "http://example.co.uk",
+#         # "http://www.subdomain.subdomain.com",
+#         # "http://www.example.edu",
+#         # "http://www.hud.ac.uk/students/",
+#         # "http://a.b.example.com/",
+#         # "https://www.example.com",
+#         # "http://example.com:80",       # Expected: Legitimate (Standard HTTP port)
+#         # "https://example.com:443",     # Expected: Legitimate (Standard HTTPS port)
+#         # "http://example.com:8080",     # Expected: Phishing (Non-standard port)
+#         # "ftp://example.com:21",
+#         # "http://https-www-paypal-it-webapps-mpp-home.soft-hair.com/",
+#         "https://google.com",
+#         # "https://www.wikipedia.org/",
+#         # "https://example.com/",
+#         "https://www.reddit.com/r/Silksong/"
+#     ]
+    
+#     for url in test_urls:
+#         if not check_if_valid(url):
+#             print(f"Invalid URL: {url}")
+#             continue
+#         response = check_if_reachable(url)
+#         if not response:
+#             print(f"Unreachable URL: {url}")
+#             continue
+#         soup = parse_html(response)
+#         if not soup:
+#             print(f"Error parsing HTML content for URL: {url}")
+#             continue
+#         domain = get_whois(url)
+#         if not domain:
+#             print(f"Error fetching WHOIS information for URL: {url}")
+#             continue
+#         print(f"Testing URL: {url}")
+#         print()
+#         print("ADDRESS BAR BASED FEATURES")
+#         print(f"Is having IP: {is_having_ip(url)}")
+#         print(f"Is URL long: {is_url_long(url)}")
+#         print(f"Is domain registration length: {is_domain_registration_length(domain)}")
+#         print(f"Is shortening service: {is_shortening_service(url)}")
+#         print(f"Is having '@' symbol: {is_having_at_symbol(url)}")
+#         print(f"Is double: {is_double(url)}")
+#         print(f"Is prefix suffix: {is_prefix_suffix(url)}")
+#         print(f"Is having sub domain: {is_having_sub_domain(url)}")
+#         print(f"Is HTTPS: {is_https(url)}")
+#         print(f"Is favicon: {is_favicon(url, soup)}")
+#         print(f"Is port: {is_port(url)}")
+#         print(f"Is HTTPS token: {is_https_token(url)}")
+#         print()
+#         print("ABNORMAL BASED FEATURES")
+#         print(f"Is request URL: {is_request_url(url, soup)}")
+#         print(f"Is URL of anchor: {is_url_of_anchor(url, soup)}")
+#         print(f"Is links in tags: {is_links_in_tags(url, soup)}")
+#         print(f"Is SFH: {is_sfh(url, soup)}")
+#         print(f"Is submitting to email: {is_submitting_to_email(response, soup)}")
+#         print(f"Is abnormal URL: {is_abnormal_url(url)}")
+#         print()
+#         print("HTML AND JAVASCRIPT BASED FEATURES")
+#         print(f"Is redirect: {is_redirect(response)}")
+#         print(f"Is on mouseover: {is_on_mouseover(soup)}")
+#         print(f"Is right click: {is_rightclick(soup)}")
+#         print(f"Is popup window: {is_popupwindow(soup)}")
+#         print(f"Is iframe: {is_iframe(soup)}")
+#         print()
+#         print("DOMAIN BASED FEATURES")
+#         print(f"Is age of domain: {is_age_of_domain(domain)}")
+#         print(f"Is DNS record: {is_dns_record(domain)}")
+#         # All require API access (not wasting API calls)
+#         # print(f"Is web traffic: {is_web_traffic(url)}")
+#         # print(f"Is page rank: {is_page_rank(url)}")
+#         # print(f"Is google index: {is_google_index(url)}")
+#         print(f"Is links pointing to page: {is_links_pointing_to_page(url, soup)}")
+#         print(f"Is statistical report: {is_statistical_report(url, domain)}")
+#         print()
+
+def is_phishing_no_html(url):
+    """Determines if a URL is a phishing website or not."""
+    if not check_if_valid(url):
+        logger.error(f"Invalid URL: {url}")
+        return "INVALID"
+    response = check_if_reachable(url)
+    if not response:
+        logger.error(f"Unreachable URL: {url}")
+        return "UNREACHABLE"
+    soup = parse_html(response)
+    if not soup:
+        logger.error(f"Error parsing HTML content for URL: {url}")
+        return "ERROR"
+    domain = get_whois(url)
+    if not domain:
+        logger.error(f"Error fetching WHOIS information for URL: {url}")
+        return "ERROR"
+    
+    data = {
+        "having_ip": is_having_ip(url),
+        "url_length": is_url_long(url),
+        "shortening_service": is_shortening_service(url),
+        "having_at_symbol": is_having_at_symbol(url),
+        "double_slash_redirecting": is_double(url),
+        "prefix_suffix": is_prefix_suffix(url),
+        "having_sub_domain": is_having_sub_domain(url),
+        "https_token": is_https_token(url),
+        "request_url": is_request_url(url, soup),
+        "url_of_anchor": is_url_of_anchor(url, soup),
+        "links_in_tags": is_links_in_tags(url, soup),
+        "sfh": is_sfh(url, soup),
+        "submitting_to_email": is_submitting_to_email(response, soup),
+        "abnormal_url": is_abnormal_url(url),
+        "redirect": is_redirect(response),
+        "on_mouseover": is_on_mouseover(soup),
+        "rightclick": is_rightclick(soup),
+        "popupwindow": is_popupwindow(soup),
+        "iframe": is_iframe(soup),
+        "age_of_domain": is_age_of_domain(domain),
+        "dns_record": is_dns_record(domain),
+        "web_traffic": is_web_traffic(url),
+        "page_rank": is_page_rank(url),
+        "google_index": is_google_index(url),
+        "links_pointing_to_page": is_links_pointing_to_page(url, soup),
+        "statistical_report": is_statistical_report(url, domain)
+    }
+    
+    # df = pd.DataFrame(data)
+    
+    return data
+
+def is_phishing(url, html):
+    """Determines if a URL is a phishing website or not."""
+    if not check_if_valid(url):
+        logger.error(f"Invalid URL: {url}")
+        return "INVALID"
+    response = check_if_reachable(url)
+    if not response:
+        logger.error(f"Unreachable URL: {url}")
+    soup = parse_html_direct(html)
+    if not soup:
+        logger.error(f"Error parsing HTML content for URL: {url}")
+        return "ERROR"
+    domain = get_whois(url)
+    if not domain:
+        logger.error(f"Error fetching WHOIS information for URL: {url}")
+        return "ERROR"
+    
+    data = {
+        "having_ip": is_having_ip(url),
+        "url_length": is_url_long(url),
+        "shortening_service": is_shortening_service(url),
+        "having_at_symbol": is_having_at_symbol(url),
+        "double_slash_redirecting": is_double(url),
+        "prefix_suffix": is_prefix_suffix(url),
+        "having_sub_domain": is_having_sub_domain(url),
+        "https_token": is_https_token(url),
+        "request_url": is_request_url(url, soup),
+        "url_of_anchor": is_url_of_anchor(url, soup),
+        "links_in_tags": is_links_in_tags(url, soup),
+        "sfh": is_sfh(url, soup),
+        "submitting_to_email": is_submitting_to_email_direct(html, soup),
+        "abnormal_url": is_abnormal_url(url),
+        "redirect": is_redirect(response),
+        "on_mouseover": is_on_mouseover(soup),
+        "rightclick": is_rightclick(soup),
+        "popupwindow": is_popupwindow(soup),
+        "iframe": is_iframe(soup),
+        "age_of_domain": is_age_of_domain(domain),
+        "dns_record": is_dns_record(domain),
+        "web_traffic": is_web_traffic(url),
+        "page_rank": is_page_rank(url),
+        "google_index": is_google_index(url),
+        "links_pointing_to_page": is_links_pointing_to_page(url, soup),
+        "statistical_report": is_statistical_report(url, domain)
+    }
+    
+    # df = pd.DataFrame(data)
+    
+    return data
