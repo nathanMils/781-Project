@@ -17,7 +17,7 @@
 \documentclass{sigkddExp}
 
 \usepackage{titlesec}
-\usepackage{longtable}
+\usepackage{geometry}
 \titlespacing*{\section}{0pt}{1em}{0.5em} % Adjusts space before and after section
 \titlespacing*{\subsection}{0pt}{0.75em}{0.5em}
 
@@ -79,44 +79,95 @@ Text here...
 Text here...
 
 \subsection{Problem Statement}
-Text here...
-\subsection{Research Objective}
-Text here...
+\label{prob_statement}
+Phishing is the malicious practice where attackers impersonate organizations, such as banks or retailers, through emails or messages, in an attempt to trick individuals into revealing sensitive information. Phishing websites, which mimic legitimate sites, play a crucial role in these attacks by luring users to enter their private information. It is quite clear that phishing attacks pose a significant threat and so there is a need for effective detection methods to identify and mitigate these threats. 
+
 \subsection{Research Questions}
-Text here...
+
+\subsubsection{What are the key features that differentiate phishing websites from legitimate websites?}
+\label{rq_1}
+Text...
+\subsubsection{What level of computational efficiency (processing time, resource usage) is required for practical phishing detection systems without compromising accuracy?}
+\label{rq_2}
+Text...
+\subsubsection{What ML method will be best suited with efficiency and usability in mind?}
+\label{rq_3}
+Text...
+\subsection{Research Objectives}
+\label{research_objs}
+With this project, I intend to develop and compare ML models, capable of accurately (and efficiently - important) detecting these phishing websites to enhance cybersecurity. To evaluate these models I intend to develop a novel prototype detection mechanism that can detect phishing websites in near real-time.
+\iffalse
+\subsection{Aims and Limitations}
+\label{aims_and_lims}
+The scope of this
+\fi
 \subsection{Methodology}
 Text here...
 
 \subsubsection{Literature Survey}
 Text here...
-\subsubsection{Prototype Maybe?}
+\subsubsection{Exploratory Data Analysis}
+Text here...
+\subsubsection{Data Collection}
+Text here...
+\subsubsection{Feature Selection}
+Text here...
+\subsubsection{Hyperparameter Optimization}
+Text here...
+\subsubsection{Classification}
+Text here...
+\subsubsection{Prototype Detection Mechanism}
 Text here...
 \subsubsection{Experimentation}
 Text here...
 \subsubsection{Critical Evaluation}
 Text here...
+\cite{bowman:reasoning}
 
 \section{Literature Survey}
 Text here...
 \subsection{Phishing}
-Text here...
+A Phishing attack is described as a deceiving practice where the main idea of the attack is to impersonate a trustworthy entity in order to obtain unauthorized access to sensitive information for malicious \cite{10.5555/1071752.1071800, Ramzan2010}.
+
+\vspace{1em}
+
+The book \cite{Ramzan2010} further characterize phishing attacks using these three characteristics:
+
+\begin{itemize}
+	\item \textbf{A brand must be spoofed/impersonated}
+	\item \textbf{A website must be involved}
+	\item \textbf{Sensitive Information must be solicited}
+\end{itemize}
+
+The 2nd of which brings us to our next section.
 \subsubsection{Phishing Websites}
 Text here...
-\subsection{Decision Trees}
+\subsubsection{Phishing Indicators}
 Text here...
-\subsection{Random Forest}
+\subsection{Usability of ML for Security}
+Text...
+\subsection{Trade-offs between Accuracy and Efficiency}
+Text...
+\subsection{Existing applications of ML in Phishing Detection}
+Text here...
+\subsection{Decision Trees}
 Text here...
 \subsection{XGBoost}
 Text here...
 \subsection{SVM}
 Text here...
 
+\section{Data Collection}
+For this project, two sources of data were required, firstly we utilized the popular \textbf{Phishing Websites} dataset
 \section{Exploratory Data Analysis}
-Text here...
+\label{eda}
+In this section we discuss and describe the dataset \textbf{Phishing Websites} and the insights gained though visualizations and analysis.
+\subsection{Description}
+\label{descprition}
+The Phishing Websites dataset contains a total of 11055 instances with 30 categorical ternary attributes derived from phishing indicators discussed and presented in \cite{6470857} as part of an effort to develop a group of features that are sound and effective in predicting phishing websites. There are a total of 12 Address Bar features, 6 Abnormal features, 5 HTML/JS features, 7 domain features, and a target feature that indicates if the website is a phishing website or not. Each attribute presents either one of three values: 1 indicating legitimate, 0 indicating suspicious, and -1 indicating phishing. Well some features only present 2 of the given values, what they represent is consistent.
 
-\section{Data Preprocessing}
-Text here...
 
+ 
 \section{Data Mining Methods and Implementation}
 Text here...
 
