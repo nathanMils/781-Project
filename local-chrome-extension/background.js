@@ -3,7 +3,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if (message.action === "sendURL") {
       const url = message.url;
       const html = message.html;
-      fetch('http://127.0.0.1:5000/receive_url', {
+      fetch('http://127.0.0.1:5000/predict_url', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
