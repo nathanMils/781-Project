@@ -6,7 +6,7 @@ authors = ["nathanMils <106823768+nathanMils@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.11.2"
 pandas = "^2.2.3"
 seaborn = "^0.13.2"
 matplotlib = "^3.9.2"
