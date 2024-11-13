@@ -1,0 +1,7 @@
+artifact_location: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/449633942101439909
+creation_time: 1731493410556
+experiment_id: '449633942101439909'
+last_update_time: 1731493441091
+lifecycle_stage: deleted
+name: HYPERPARAMETER_TUNING_GRID_SEARCH
+tags: {}

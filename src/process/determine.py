@@ -15,9 +15,6 @@ import logging
 
 logger = logging.getLogger('process.determine')
 
-from dotenv import load_dotenv
-load_dotenv()
-
 
 ## ADDRESS BAR BASED FEATURES #########################################################
 
@@ -766,107 +763,6 @@ def get_whois(url):
     except Exception:
         return False
 
-# if __name__ == "__main__":
-#     test_urls = [
-#         # "http://125.98.3.123/fake.html",
-#         # "http://0x58.0xCC.0xCA.0x62/2/paypal.ca/index.html",
-#         # "http://example.com",
-#         # "http://bit.ly/2xT",
-#         # "http://example.com/this-is-a-very-long-url-that-should-be-considered-suspicious-because-it-is-over-54-characters-long",
-#         # "http://short.url",
-#         # "http://user:password@example.com",
-#         # "https://legit-website.com",
-#         # "ftp://admin:admin@phishing-site.com",
-#         # "http://www.legitimate.com",
-#         # "http://www.legitimate.com//http://www.phishing.com",
-#         # "https://secure-site.com",
-#         # "https://example.com//http://another-phishing.com",
-#         # "http://normal-site.com/some/path",
-#         # "http://www.paypal.com",
-#         # "http://www.Confirme-paypal.com",
-#         # "https://legitimate-site.com",
-#         # "http://fake-paypal-secure.com",
-#         # "http://secure-login.example.com",
-#         # "http://www.hud.ac.uk/students/",
-#         # "http://www.paypal.com",
-#         # "http://secure.paypal.com",
-#         # "http://subdomain.paypal.com",
-#         # "http://www.fake.paypal.com",
-#         # "http://example.co.uk",
-#         # "http://www.subdomain.subdomain.com",
-#         # "http://www.example.edu",
-#         # "http://www.hud.ac.uk/students/",
-#         # "http://a.b.example.com/",
-#         # "https://www.example.com",
-#         # "http://example.com:80",       # Expected: Legitimate (Standard HTTP port)
-#         # "https://example.com:443",     # Expected: Legitimate (Standard HTTPS port)
-#         # "http://example.com:8080",     # Expected: Phishing (Non-standard port)
-#         # "ftp://example.com:21",
-#         # "http://https-www-paypal-it-webapps-mpp-home.soft-hair.com/",
-#         "https://google.com",
-#         # "https://www.wikipedia.org/",
-#         # "https://example.com/",
-#         "https://www.reddit.com/r/Silksong/"
-#     ]
-    
-#     for url in test_urls:
-#         if not check_if_valid(url):
-#             print(f"Invalid URL: {url}")
-#             continue
-#         response = check_if_reachable(url)
-#         if not response:
-#             print(f"Unreachable URL: {url}")
-#             continue
-#         soup = parse_html(response)
-#         if not soup:
-#             print(f"Error parsing HTML content for URL: {url}")
-#             continue
-#         domain = get_whois(url)
-#         if not domain:
-#             print(f"Error fetching WHOIS information for URL: {url}")
-#             continue
-#         print(f"Testing URL: {url}")
-#         print()
-#         print("ADDRESS BAR BASED FEATURES")
-#         print(f"Is having IP: {is_having_ip(url)}")
-#         print(f"Is URL long: {is_url_long(url)}")
-#         print(f"Is domain registration length: {is_domain_registration_length(domain)}")
-#         print(f"Is shortening service: {is_shortening_service(url)}")
-#         print(f"Is having '@' symbol: {is_having_at_symbol(url)}")
-#         print(f"Is double: {is_double(url)}")
-#         print(f"Is prefix suffix: {is_prefix_suffix(url)}")
-#         print(f"Is having sub domain: {is_having_sub_domain(url)}")
-#         print(f"Is HTTPS: {is_https(url)}")
-#         print(f"Is favicon: {is_favicon(url, soup)}")
-#         print(f"Is port: {is_port(url)}")
-#         print(f"Is HTTPS token: {is_https_token(url)}")
-#         print()
-#         print("ABNORMAL BASED FEATURES")
-#         print(f"Is request URL: {is_request_url(url, soup)}")
-#         print(f"Is URL of anchor: {is_url_of_anchor(url, soup)}")
-#         print(f"Is links in tags: {is_links_in_tags(url, soup)}")
-#         print(f"Is SFH: {is_sfh(url, soup)}")
-#         print(f"Is submitting to email: {is_submitting_to_email(response, soup)}")
-#         print(f"Is abnormal URL: {is_abnormal_url(url)}")
-#         print()
-#         print("HTML AND JAVASCRIPT BASED FEATURES")
-#         print(f"Is redirect: {is_redirect(response)}")
-#         print(f"Is on mouseover: {is_on_mouseover(soup)}")
-#         print(f"Is right click: {is_rightclick(soup)}")
-#         print(f"Is popup window: {is_popupwindow(soup)}")
-#         print(f"Is iframe: {is_iframe(soup)}")
-#         print()
-#         print("DOMAIN BASED FEATURES")
-#         print(f"Is age of domain: {is_age_of_domain(domain)}")
-#         print(f"Is DNS record: {is_dns_record(domain)}")
-#         # All require API access (not wasting API calls)
-#         # print(f"Is web traffic: {is_web_traffic(url)}")
-#         # print(f"Is page rank: {is_page_rank(url)}")
-#         # print(f"Is google index: {is_google_index(url)}")
-#         print(f"Is links pointing to page: {is_links_pointing_to_page(url, soup)}")
-#         print(f"Is statistical report: {is_statistical_report(url, domain)}")
-#         print()
-
 def is_phishing_no_html(url):
     """Determines if a URL is a phishing website or not."""
     if not check_if_valid(url):
@@ -913,8 +809,6 @@ def is_phishing_no_html(url):
         "links_pointing_to_page": is_links_pointing_to_page(url, soup),
         "statistical_report": is_statistical_report(url, domain)
     }
-    
-    # df = pd.DataFrame(data)
     
     return data
 
@@ -963,7 +857,5 @@ def is_phishing(url, html):
         "links_pointing_to_page": is_links_pointing_to_page(url, soup),
         "statistical_report": is_statistical_report(url, domain)
     }
-    
-    # df = pd.DataFrame(data)
     
     return data

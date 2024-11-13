@@ -1,0 +1,16 @@
+artifact_uri: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/778653589422036269/e0dbc27799fe47ca9d1e0a23a703aca0/artifacts
+deleted_time: 1731493444291
+end_time: 1731493238895
+entry_point_name: ''
+experiment_id: '778653589422036269'
+lifecycle_stage: deleted
+run_id: e0dbc27799fe47ca9d1e0a23a703aca0
+run_name: DecisionTreeClassifier_0
+run_uuid: e0dbc27799fe47ca9d1e0a23a703aca0
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1731493235615
+status: 3
+tags: []
+user_id: natei
