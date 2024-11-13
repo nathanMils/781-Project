@@ -33,10 +33,12 @@ def predict():
         # Predict the URL using the loaded model
         prediction = model.predict(df)
 
+        logger.info(f"Prediction: {prediction[0]}")
+
         return jsonify(
             {
                 "message": "URL tested successfully!",
-                "is_phishing": bool(prediction[0])
+                "is_phishing": not bool(prediction[0])
             }
         ), 200
     except Exception as e:
@@ -48,7 +50,7 @@ def predict():
         ), 400
     
 @app.route('/predict_url_html', methods=['POST'])
-def predict():
+def predict_html():
     try:
         # Retrieve the URL and HTML from the request
         logger.info("Received request to test URL")
@@ -70,7 +72,7 @@ def predict():
         return jsonify(
             {
                 "message": "URL tested successfully!",
-                "is_phishing": bool(prediction[0])
+                "is_phishing": not bool(prediction[0])
             }
         ), 200
     except Exception as e:

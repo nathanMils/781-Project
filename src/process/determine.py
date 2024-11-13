@@ -780,15 +780,20 @@ def is_phishing_no_html(url):
     if not domain:
         logger.error(f"Error fetching WHOIS information for URL: {url}")
         return "ERROR"
+
     
     data = {
-        "having_ip": is_having_ip(url),
+        "having_ip_address": is_having_ip(url),
         "url_length": is_url_long(url),
-        "shortening_service": is_shortening_service(url),
+        "shortining_service": is_shortening_service(url),
         "having_at_symbol": is_having_at_symbol(url),
         "double_slash_redirecting": is_double(url),
         "prefix_suffix": is_prefix_suffix(url),
         "having_sub_domain": is_having_sub_domain(url),
+        "sslfinal_state": is_https(url),
+        "domain_registration_length": is_domain_registration_length(domain),
+        "favicon": is_favicon(url, soup),
+        "port": is_port(url),
         "https_token": is_https_token(url),
         "request_url": is_request_url(url, soup),
         "url_of_anchor": is_url_of_anchor(url, soup),
@@ -802,7 +807,7 @@ def is_phishing_no_html(url):
         "popupwindow": is_popupwindow(soup),
         "iframe": is_iframe(soup),
         "age_of_domain": is_age_of_domain(domain),
-        "dns_record": is_dns_record(domain),
+        "dnsrecord": is_dns_record(domain),
         "web_traffic": is_web_traffic(url),
         "page_rank": is_page_rank(url),
         "google_index": is_google_index(url),
@@ -832,11 +837,15 @@ def is_phishing(url, html):
     data = {
         "having_ip": is_having_ip(url),
         "url_length": is_url_long(url),
-        "shortening_service": is_shortening_service(url),
+        "shortining_service": is_shortening_service(url),
         "having_at_symbol": is_having_at_symbol(url),
         "double_slash_redirecting": is_double(url),
         "prefix_suffix": is_prefix_suffix(url),
         "having_sub_domain": is_having_sub_domain(url),
+        "sslfinal_state": is_https(url),
+        "domain_registration_length": is_domain_registration_length(domain),
+        "favicon": is_favicon(url, soup),
+        "port": is_port(url),
         "https_token": is_https_token(url),
         "request_url": is_request_url(url, soup),
         "url_of_anchor": is_url_of_anchor(url, soup),
@@ -850,7 +859,7 @@ def is_phishing(url, html):
         "popupwindow": is_popupwindow(soup),
         "iframe": is_iframe(soup),
         "age_of_domain": is_age_of_domain(domain),
-        "dns_record": is_dns_record(domain),
+        "dnsrecord": is_dns_record(domain),
         "web_traffic": is_web_traffic(url),
         "page_rank": is_page_rank(url),
         "google_index": is_google_index(url),

@@ -1,4 +1,4 @@
-from util import set_seed, setup_logging, fetch_data, fetch_data_local
+from util import setup_logging, fetch_data, fetch_data_local
 from flask_server import start_server
 import os
 
@@ -11,7 +11,6 @@ RUN_ID = os.getenv("MODEL_ID")
 
 def configure():
     setup_logging()
-    set_seed(SEED)
 
 def main():
     print("Starting Project")
