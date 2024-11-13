@@ -12,6 +12,7 @@ import os
 import json
 
 import logging
+import time
 
 logger = logging.getLogger('process.determine')
 
@@ -817,6 +818,71 @@ def is_phishing_no_html(url):
     
     return data
 
+def is_phishing_no_html_time(url):
+    """Determines if a URL is a phishing website or not."""
+    timing_data = {}  # Dictionary to store the time taken for each feature
+
+    if not check_if_valid(url):
+        logger.error(f"Invalid URL: {url}")
+        return "INVALID", timing_data
+    
+    response = check_if_reachable(url)
+    if not response:
+        logger.error(f"Unreachable URL: {url}")
+        return "UNREACHABLE", timing_data
+    
+    soup = parse_html(response)
+    if not soup:
+        logger.error(f"Error parsing HTML content for URL: {url}")
+        return "ERROR", timing_data
+    
+    domain = get_whois(url)
+    if not domain:
+        logger.error(f"Error fetching WHOIS information for URL: {url}")
+        return "ERROR", timing_data
+
+    # Function to measure time taken for each feature
+    def time_feature_check(func, *args):
+        start_time = time.time()
+        result = func(*args)
+        elapsed_time = time.time() - start_time
+        return result, elapsed_time
+
+    # Collect data and measure time for each feature
+    data = {}
+    data["having_ip_address"], timing_data["having_ip_address"] = time_feature_check(is_having_ip, url)
+    data["url_length"], timing_data["url_length"] = time_feature_check(is_url_long, url)
+    data["shortining_service"], timing_data["shortining_service"] = time_feature_check(is_shortening_service, url)
+    data["having_at_symbol"], timing_data["having_at_symbol"] = time_feature_check(is_having_at_symbol, url)
+    data["double_slash_redirecting"], timing_data["double_slash_redirecting"] = time_feature_check(is_double, url)
+    data["prefix_suffix"], timing_data["prefix_suffix"] = time_feature_check(is_prefix_suffix, url)
+    data["having_sub_domain"], timing_data["having_sub_domain"] = time_feature_check(is_having_sub_domain, url)
+    data["sslfinal_state"], timing_data["sslfinal_state"] = time_feature_check(is_https, url)
+    data["domain_registration_length"], timing_data["domain_registration_length"] = time_feature_check(is_domain_registration_length, domain)
+    data["favicon"], timing_data["favicon"] = time_feature_check(is_favicon, url, soup)
+    data["port"], timing_data["port"] = time_feature_check(is_port, url)
+    data["https_token"], timing_data["https_token"] = time_feature_check(is_https_token, url)
+    data["request_url"], timing_data["request_url"] = time_feature_check(is_request_url, url, soup)
+    data["url_of_anchor"], timing_data["url_of_anchor"] = time_feature_check(is_url_of_anchor, url, soup)
+    data["links_in_tags"], timing_data["links_in_tags"] = time_feature_check(is_links_in_tags, url, soup)
+    data["sfh"], timing_data["sfh"] = time_feature_check(is_sfh, url, soup)
+    data["submitting_to_email"], timing_data["submitting_to_email"] = time_feature_check(is_submitting_to_email, response, soup)
+    data["abnormal_url"], timing_data["abnormal_url"] = time_feature_check(is_abnormal_url, url)
+    data["redirect"], timing_data["redirect"] = time_feature_check(is_redirect, response)
+    data["on_mouseover"], timing_data["on_mouseover"] = time_feature_check(is_on_mouseover, soup)
+    data["rightclick"], timing_data["rightclick"] = time_feature_check(is_rightclick, soup)
+    data["popupwindow"], timing_data["popupwindow"] = time_feature_check(is_popupwindow, soup)
+    data["iframe"], timing_data["iframe"] = time_feature_check(is_iframe, soup)
+    data["age_of_domain"], timing_data["age_of_domain"] = time_feature_check(is_age_of_domain, domain)
+    data["dnsrecord"], timing_data["dnsrecord"] = time_feature_check(is_dns_record, domain)
+    data["web_traffic"], timing_data["web_traffic"] = time_feature_check(is_web_traffic, url)
+    data["page_rank"], timing_data["page_rank"] = time_feature_check(is_page_rank, url)
+    data["google_index"], timing_data["google_index"] = time_feature_check(is_google_index, url)
+    data["links_pointing_to_page"], timing_data["links_pointing_to_page"] = time_feature_check(is_links_pointing_to_page, url, soup)
+    data["statistical_report"], timing_data["statistical_report"] = time_feature_check(is_statistical_report, url, domain)
+    
+    return data, timing_data
+
 def is_phishing(url, html):
     """Determines if a URL is a phishing website or not."""
     if not check_if_valid(url):
@@ -835,7 +901,7 @@ def is_phishing(url, html):
         return "ERROR"
     
     data = {
-        "having_ip": is_having_ip(url),
+        "having_ip_address": is_having_ip(url),
         "url_length": is_url_long(url),
         "shortining_service": is_shortening_service(url),
         "having_at_symbol": is_having_at_symbol(url),
