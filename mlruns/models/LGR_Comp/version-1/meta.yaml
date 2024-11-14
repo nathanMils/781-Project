@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1731622438561
+current_stage: None
+description: ''
+last_updated_timestamp: 1731622438561
+name: LGR_Comp
+run_id: 28e7fc7b52a74e0196dfd7fe88e4dcdc
+run_link: ''
+source: file:///home/nathan/Desktop/781-Project/configs/models/28e7fc7b52a74e0196dfd7fe88e4dcdc/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///home/nathan/Desktop/781-Project/configs/models/28e7fc7b52a74e0196dfd7fe88e4dcdc/artifacts/model
+user_id: null
+version: 1
