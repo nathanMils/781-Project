@@ -1,1 +1,1 @@
-from .determine import is_phishing, is_phishing_no_html
+from .determine import is_phishing, is_phishing_no_html, is_phishing_information_gain, is_phishing_composite

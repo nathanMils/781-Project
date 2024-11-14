@@ -143,8 +143,13 @@ def is_having_sub_domain(url):
 ## List of trusted Certificate Authorities
 TRUSTED_ISSUER_KEYWORDS = {
     "GeoTrust", "GoDaddy", "Network Solutions", "Thawte",
-    "Comodo", "Doster", "VeriSign", "DigiCert", "WR2"
+    "Comodo", "Doster", "VeriSign", "DigiCert", "WR2",
+    "GlobalSign", "Entrust", "Symantec", "Let's Encrypt",
+    "Amazon", "Trustwave", "QuoVadis",
+    "SwissSign", "Sectigo", "WoSign", "CNNIC",
+    "StartCom", "GeoTrust", "Verisign"
 }
+
 
 def is_trusted_issuer(issuer_common_name):
     return any(keyword in issuer_common_name for keyword in TRUSTED_ISSUER_KEYWORDS)
@@ -161,8 +166,12 @@ def is_https(url):
         issuer = dict(x[0] for x in cert['issuer'])
         issuer_common_name = issuer.get('commonName', '')
 
+        logger.info(f"Issuer Data: {issuer}")
+
         if not cert:
             return 1
+        
+        logger.info(f"Issuer: {issuer_common_name}")
 
         if not is_trusted_issuer(issuer_common_name):
             return 0
@@ -172,7 +181,7 @@ def is_https(url):
 
 
         age_in_years = (datetime.now() - valid_from).days / 365.25
-
+        logger.info(f"Age in years: {age_in_years}")
         if age_in_years >= 1:
             return 1
         else:
@@ -312,32 +321,36 @@ def is_request_url(url,soup):
 ## STATUS: FINISHED
 def is_url_of_anchor(url, soup):
     """Determines if the URL of the anchor is suspicious."""
-    base_domain = urlparse(url).netloc
+    website_domain = urlparse(url).netloc
 
-    total_anchors = 0
-    external_anchors = 0
+    anchor_tags = soup.find_all('a')
+    different_domain_count = 0
+    total_count = 0
 
-    for anchor in soup.find_all('a'):
-        href = anchor.get('href')
-        if href:
-            if href in ['#', '#content', '#skip', 'JavaScript:void(0)', 'javascript:void(0)', '']:
-                continue
+    for anchor in anchor_tags:
+        href = anchor.get('href', '')
+        if href in ['#', '#content', '#skip', 'JavaScript::void(0)', '']:
+            continue
+    
+        anchor_url = urlparse(href)
+        
+        # If the anchor URL has a netloc (i.e., it is a full URL), compare the domains
+        if anchor_url.netloc:
+            if anchor_url.netloc != website_domain:
+                different_domain_count += 1
+        
+        total_count += 1
 
-            total_anchors += 1
-            anchor_url = urljoin(url, href)
-            anchor_domain = urlparse(anchor_url).netloc
-
-            if anchor_domain and anchor_domain != base_domain:
-                external_anchors += 1
-
-    if total_anchors == 0:
+    if total_count == 0:
         return 1
+    
+    # Calculate the percentage of anchors with different domains
+    domain_percentage = (different_domain_count / total_count) * 100
 
-    external_percentage = (external_anchors / total_anchors) * 100
-
-    if external_percentage < 31:
+    # Apply the classification rule
+    if domain_percentage < 31:
         return 1
-    elif 31 <= external_percentage <= 67:
+    elif 31 <= domain_percentage <= 67:
         return 0
     else:
         return -1
@@ -934,3 +947,95 @@ def is_phishing(url, html):
     }
     
     return data
+
+def is_phishing_information_gain(url, html):
+    if not check_if_valid(url):
+        logger.error(f"Invalid URL: {url}")
+        return "INVALID"
+    response = check_if_reachable(url)
+    if not response:
+        logger.error(f"Unreachable URL: {url}")
+    soup = parse_html_direct(html)
+    if not soup:
+        logger.error(f"Error parsing HTML content for URL: {url}")
+        return "ERROR"
+    domain = get_whois(url)
+    if not domain:
+        logger.error(f"Error fetching WHOIS information for URL: {url}")
+        return "ERROR"
+    
+    data = {
+        "sslfinal_state": is_https(url),
+        "url_of_anchor": is_url_of_anchor(url, soup),
+        "prefix_suffix": is_prefix_suffix(url),
+        "web_traffic": is_web_traffic(url),
+        "having_sub_domain": is_having_sub_domain(url),
+        "links_in_tags": is_links_in_tags(url, soup),
+        "request_url": is_request_url(url, soup),
+        "sfh": is_sfh(url, soup),
+        "domain_registration_length": is_domain_registration_length(domain),
+        "google_index": is_google_index(url),
+    }
+
+    return data
+
+def is_phishing_composite(url, html):
+    if not check_if_valid(url):
+        logger.error(f"Invalid URL: {url}")
+        return "INVALID"
+    response = check_if_reachable(url)
+    if not response:
+        logger.error(f"Unreachable URL: {url}")
+    soup = parse_html_direct(html)
+    if not soup:
+        logger.error(f"Error parsing HTML content for URL: {url}")
+        return "ERROR"
+    domain = get_whois(url)
+    if not domain:
+        logger.error(f"Error fetching WHOIS information for URL: {url}")
+        return "ERROR"
+    
+    data = {
+        "url_of_anchor": is_url_of_anchor(url, soup),
+        "sslfinal_state": is_https(url),
+        "prefix_suffix": is_prefix_suffix(url),
+        "having_sub_domain": is_having_sub_domain(url),
+        "links_in_tags": is_links_in_tags(url, soup),
+        "request_url": is_request_url(url, soup),
+        "sfh": is_sfh(url, soup),
+        "domain_registration_length": is_domain_registration_length(domain),
+        "age_of_domain": is_age_of_domain(domain),
+        "having_ip_address": is_having_ip(url),
+    }
+
+    return data
+
+if __name__ == "__main__":
+    urls = [
+        "https://www.google.com",
+        "https://www.facebook.com",
+        "https://www.youtube.com",
+        "https://www.twitter.com",
+        "https://www.instagram.com",
+        "https://www.pinterest.com",
+        "https://www.reddit.com",
+        "https://www.wikipedia.org",
+        "https://www.amazon.com",
+        "https://www.netflix.com",
+        "https://www.amazon.com",
+    ]
+    collected_data = []
+    for url in urls:
+        data, timing_data = is_phishing_no_html_time(url)
+
+        print(f"URL: {url}")
+        print("Data: ", data)
+        print("Timing Data: ", timing_data)
+        collected_data.append({
+            "URL": url,
+            "Data": data,
+            "Timing Data": timing_data
+        })
+    
+    with open('./data/collected/time_data.json', 'w') as f:
+        json.dump(collected_data, f, indent=4)

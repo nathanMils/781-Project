@@ -31,6 +31,7 @@ flask-cors = "^5.0.0"
 dnspython = "^2.7.0"
 python-dotenv = "^1.0.1"
 psutil = "^6.1.0"
+xgboost = "^2.1.2"
 
 
 [build-system]

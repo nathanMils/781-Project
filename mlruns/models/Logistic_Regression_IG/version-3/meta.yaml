@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1731590133742
+current_stage: None
+description: ''
+last_updated_timestamp: 1731590133742
+name: Logistic_Regression_IG
+run_id: e50670fbf4c34f2a9a107ad198398b91
+run_link: ''
+source: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/833489810259065629/e50670fbf4c34f2a9a107ad198398b91/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/833489810259065629/e50670fbf4c34f2a9a107ad198398b91/artifacts/model
+user_id: null
+version: 3

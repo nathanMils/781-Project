@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1731596981507
+current_stage: None
+description: ''
+last_updated_timestamp: 1731596981507
+name: Decision_Tree_Comp
+run_id: fc2036cb35964fd4854123070a95a5bd
+run_link: ''
+source: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/899667761209900744/fc2036cb35964fd4854123070a95a5bd/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/899667761209900744/fc2036cb35964fd4854123070a95a5bd/artifacts/model
+user_id: null
+version: 2

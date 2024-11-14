@@ -1,0 +1,16 @@
+artifact_uri: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/467789726166779809/452ef91718624a9c9289a357b7a853fa/artifacts
+deleted_time: 1731586366899
+end_time: 1731585365658
+entry_point_name: ''
+experiment_id: '467789726166779809'
+lifecycle_stage: deleted
+run_id: 452ef91718624a9c9289a357b7a853fa
+run_name: HPO_1
+run_uuid: 452ef91718624a9c9289a357b7a853fa
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1731585359680
+status: 3
+tags: []
+user_id: natei

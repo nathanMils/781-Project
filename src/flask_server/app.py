@@ -2,11 +2,13 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import signal
 import pandas as pd
-from process import is_phishing_no_html, is_phishing
+from process import is_phishing_information_gain, is_phishing_composite, is_phishing
 
 import mlflow.pyfunc
 model = None
 mlflow.set_tracking_uri("./mlruns")
+
+dataset_type = None
 
 import logging
 
@@ -22,16 +24,24 @@ def time_run_check(func, *args):
     elapsed_time = time.time() - start_time
     return result, elapsed_time
 
+def run_by_dataset_type(dataset_type, func, *args):
+    if dataset_type == "IG":
+        return func(is_phishing_information_gain, *args)
+    elif dataset_type == "Comp":
+        return func(is_phishing_composite, *args)
+    else:
+        raise ValueError("Invalid dataset type")
+
 collected_data = []
 
-# Intercept SIGINT signal and save collected data before shutting down
-def shutdown_handler(_signum, _frame):
-    logger.info("Server is stopping... saving collected data.")
-    with open('collected_data.json', 'w') as f:
-        json.dump(collected_data, f, default=str)
+# # Intercept SIGINT signal and save collected data before shutting down
+# def shutdown_handler(_signum, _frame):
+#     logger.info("Server is stopping... saving collected data.")
+#     with open('collected_data.json', 'w') as f:
+#         json.dump(collected_data, f, default=str)
 
-# Register signal handler for graceful shutdown on Ctrl+C
-signal.signal(signal.SIGINT, shutdown_handler)
+# # Register signal handler for graceful shutdown on Ctrl+C
+# signal.signal(signal.SIGINT, shutdown_handler)
 
 app = Flask(__name__)
 CORS(app)
@@ -47,7 +57,7 @@ def predict():
         logger.info(f"URL: {url}")
 
         # Process URL and determine characteristics
-        characteristics, preprocess_time = time_run_check(is_phishing_no_html, url)
+        characteristics, preprocess_time = time_run_check(is_phishing, url)
         logger.info(f"Data: {characteristics}, Processing time: {preprocess_time}")
 
         # Convert the characteristics to a DataFrame
@@ -101,7 +111,7 @@ def predict_html():
         logger.info(f"URL: {url}")
 
         # Process URL and determine characteristics
-        characteristics, preprocess_time = time_run_check(is_phishing, url, html)
+        characteristics, preprocess_time = run_by_dataset_type(dataset_type, time_run_check, url, html)
         logger.info(f"Data: {characteristics}, Processing time: {preprocess_time}")
 
         # Convert the characteristics to a DataFrame
@@ -142,9 +152,10 @@ def predict_html():
             }
         ), 400
 
-def start_server(model_uri):
-    global model
+def start_server(model_uri, dataset):
+    global model, dataset_type
     model = mlflow.pyfunc.load_model(model_uri)
+    dataset_type = dataset
     logger.info("Starting Flask server")
     app.run(debug=True, port=5000)
 

@@ -1,0 +1,6 @@
+artifact_location: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/899667761209900744
+creation_time: 1731581196783
+experiment_id: '899667761209900744'
+last_update_time: 1731581196783
+lifecycle_stage: active
+name: Decision_Tree_kfold_cross_validation_composite

@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/899667761209900744/34160c96f33b4de4b771dd678347268f/artifacts
+end_time: 1731594024289
+entry_point_name: ''
+experiment_id: '899667761209900744'
+lifecycle_stage: active
+run_id: 34160c96f33b4de4b771dd678347268f
+run_name: KFC_2_DT
+run_uuid: 34160c96f33b4de4b771dd678347268f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1731594020325
+status: 3
+tags: []
+user_id: natei

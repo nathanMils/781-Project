@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1731603437356
+current_stage: None
+description: ''
+last_updated_timestamp: 1731603437356
+name: XGBoost_IG
+run_id: a2e850b11e6548008f3d3439e2b3f402
+run_link: ''
+source: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/139414741785103268/a2e850b11e6548008f3d3439e2b3f402/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/139414741785103268/a2e850b11e6548008f3d3439e2b3f402/artifacts/model
+user_id: null
+version: 1

@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1731589804765
+current_stage: None
+description: ''
+last_updated_timestamp: 1731589804765
+name: Logistic_Regression_Comp
+run_id: 9ec28734ca614d64b2a68afa1482f34d
+run_link: ''
+source: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/748473990143816200/9ec28734ca614d64b2a68afa1482f34d/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/748473990143816200/9ec28734ca614d64b2a68afa1482f34d/artifacts/model
+user_id: null
+version: 2

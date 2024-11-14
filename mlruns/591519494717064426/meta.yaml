@@ -1,0 +1,6 @@
+artifact_location: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/591519494717064426
+creation_time: 1731602628877
+experiment_id: '591519494717064426'
+last_update_time: 1731602628877
+lifecycle_stage: active
+name: XGBoost_grid_search_IG
