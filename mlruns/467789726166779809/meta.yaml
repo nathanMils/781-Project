@@ -1,6 +1,0 @@
-artifact_location: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/467789726166779809
-creation_time: 1731585359670
-experiment_id: '467789726166779809'
-last_update_time: 1731585359670
-lifecycle_stage: active
-name: Logistic_Regression_grid_search_composite

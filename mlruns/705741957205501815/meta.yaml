@@ -1,6 +1,0 @@
-artifact_location: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/705741957205501815
-creation_time: 1731603324332
-experiment_id: '705741957205501815'
-last_update_time: 1731603324332
-lifecycle_stage: active
-name: XGBoost_kfold_cross_validation_composite

@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1731617330866
+current_stage: None
+description: ''
+last_updated_timestamp: 1731617330866
+name: DT_IG
+run_id: 4b277aa30a2f4b3a93b912fd31aaeec8
+run_link: ''
+source: file:///home/nathan/Desktop/781-Project/configs/models/4b277aa30a2f4b3a93b912fd31aaeec8/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///home/nathan/Desktop/781-Project/configs/models/4b277aa30a2f4b3a93b912fd31aaeec8/artifacts/model
+user_id: null
+version: 1

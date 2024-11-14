@@ -32,6 +32,7 @@ dnspython = "^2.7.0"
 python-dotenv = "^1.0.1"
 psutil = "^6.1.0"
 xgboost = "^2.1.2"
+psycopg2 = "^2.9.10"
 
 
 [build-system]

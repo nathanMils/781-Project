@@ -1,6 +1,0 @@
-artifact_location: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/833489810259065629
-creation_time: 1731585107425
-experiment_id: '833489810259065629'
-last_update_time: 1731585107425
-lifecycle_stage: active
-name: Logistic_Regression_kfold_cross_validation_IG
