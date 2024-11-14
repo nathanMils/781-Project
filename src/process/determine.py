@@ -965,7 +965,6 @@ def is_phishing_information_gain(url, html):
         return "ERROR"
     
     data = {
-        "sslfinal_state": is_https(url),
         "url_of_anchor": is_url_of_anchor(url, soup),
         "prefix_suffix": is_prefix_suffix(url),
         "web_traffic": is_web_traffic(url),
@@ -975,7 +974,14 @@ def is_phishing_information_gain(url, html):
         "sfh": is_sfh(url, soup),
         "domain_registration_length": is_domain_registration_length(domain),
         "google_index": is_google_index(url),
+        "age_of_domain": is_age_of_domain(domain),
+        "page_rank": is_page_rank(url),
+        "having_ip_address": is_having_ip(url),
+        "statistical_report": is_statistical_report(url, domain),
+        "links_pointing_to_page": is_links_pointing_to_page(url, soup),
+        "dnsrecord": is_dns_record(domain)
     }
+
 
     return data
 
@@ -997,7 +1003,6 @@ def is_phishing_composite(url, html):
     
     data = {
         "url_of_anchor": is_url_of_anchor(url, soup),
-        "sslfinal_state": is_https(url),
         "prefix_suffix": is_prefix_suffix(url),
         "having_sub_domain": is_having_sub_domain(url),
         "links_in_tags": is_links_in_tags(url, soup),
@@ -1006,6 +1011,12 @@ def is_phishing_composite(url, html):
         "domain_registration_length": is_domain_registration_length(domain),
         "age_of_domain": is_age_of_domain(domain),
         "having_ip_address": is_having_ip(url),
+        "statistical_report": is_statistical_report(url, domain),
+        "dnsrecord": is_dns_record(domain),
+        "url_length": is_url_long(url),
+        "links_pointing_to_page": is_links_pointing_to_page(url, soup),
+        "shortining_service": is_shortening_service(url),
+        "abnormal_url": is_abnormal_url(url)
     }
 
     return data

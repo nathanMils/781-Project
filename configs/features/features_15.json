@@ -1,0 +1,36 @@
+{
+    "IG": [
+        "url_of_anchor",
+        "prefix_suffix",
+        "web_traffic",
+        "having_sub_domain",
+        "links_in_tags",
+        "request_url",
+        "sfh",
+        "domain_registration_length",
+        "google_index",
+        "age_of_domain",
+        "page_rank",
+        "having_ip_address",
+        "statistical_report",
+        "links_pointing_to_page",
+        "dnsrecord"
+    ],
+    "Comp": [
+        "url_of_anchor",
+        "prefix_suffix",
+        "having_sub_domain",
+        "links_in_tags",
+        "request_url",
+        "sfh",
+        "domain_registration_length",
+        "age_of_domain",
+        "having_ip_address",
+        "statistical_report",
+        "dnsrecord",
+        "url_length",
+        "links_pointing_to_page",
+        "shortining_service",
+        "abnormal_url"
+    ]
+}
