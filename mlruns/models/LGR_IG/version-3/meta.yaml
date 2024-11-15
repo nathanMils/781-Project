@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1731660137057
+current_stage: None
+description: ''
+last_updated_timestamp: 1731660137057
+name: LGR_IG
+run_id: 7e7b6b4f437a4f55aae1e5a19b300df8
+run_link: ''
+source: file:///C:\Users\natei\Desktop\COS 781 Project\781-Project\configs\models/7e7b6b4f437a4f55aae1e5a19b300df8/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///C:\Users\natei\Desktop\COS 781 Project\781-Project\configs\models/7e7b6b4f437a4f55aae1e5a19b300df8/artifacts/model
+user_id: null
+version: 3

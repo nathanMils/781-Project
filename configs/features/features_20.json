@@ -11,15 +11,15 @@
         "google_index",
         "age_of_domain",
         "page_rank",
-        "having_ip_address",
-        "statistical_report",
         "links_pointing_to_page",
         "dnsrecord",
-        "url_length",
         "shortining_service",
         "abnormal_url",
-        "having_at_symbol",
-        "on_mouseover"
+        "on_mouseover",
+        "double_slash_redirecting",
+        "redirect",
+        "submitting_to_email",
+        "rightclick"
     ],
     "Comp": [
         "url_of_anchor",
@@ -30,17 +30,17 @@
         "sfh",
         "domain_registration_length",
         "age_of_domain",
-        "having_ip_address",
-        "statistical_report",
         "dnsrecord",
-        "url_length",
         "links_pointing_to_page",
         "shortining_service",
         "abnormal_url",
-        "having_at_symbol",
-        "https_token",
         "on_mouseover",
         "double_slash_redirecting",
-        "port"
+        "redirect",
+        "favicon",
+        "iframe",
+        "submitting_to_email",
+        "rightclick",
+        "popupwindow"
     ]
 }

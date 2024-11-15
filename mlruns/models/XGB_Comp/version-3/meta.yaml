@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1731660602898
+current_stage: None
+description: ''
+last_updated_timestamp: 1731660602898
+name: XGB_Comp
+run_id: de84d10aa2f1483a941b2380dbfedd40
+run_link: ''
+source: file:///C:\Users\natei\Desktop\COS 781 Project\781-Project\configs\models/de84d10aa2f1483a941b2380dbfedd40/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///C:\Users\natei\Desktop\COS 781 Project\781-Project\configs\models/de84d10aa2f1483a941b2380dbfedd40/artifacts/model
+user_id: null
+version: 3

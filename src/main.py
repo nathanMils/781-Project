@@ -5,17 +5,16 @@ import os
 # Load environment variables
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path='./.env')
-
 SEED = 21
 
 def configure():
     setup_logging()
 
 def main():
-    MODEL_TYPE = os.getenv("MODEL_TYPE_")
-    MODEL_VERSION = os.getenv("MODEL_VERSION_")
-    DATASET = os.getenv("DATASET_")
+    load_dotenv(dotenv_path='./.env')
+    MODEL_TYPE = os.getenv("MODEL_TYPE")
+    MODEL_VERSION = os.getenv("MODEL_VERSION")
+    DATASET = os.getenv("DATASET")
     print("Starting Project")
     print(f"Model Type: {MODEL_TYPE}")
     print(f"Model Version: {MODEL_VERSION}")

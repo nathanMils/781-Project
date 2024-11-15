@@ -4,6 +4,8 @@ import signal
 import pandas as pd
 from process import is_phishing_information_gain, is_phishing_composite, is_phishing
 
+import pandas as pd
+
 import mlflow.pyfunc
 model = None
 mlflow.set_tracking_uri("./mlruns")
@@ -34,17 +36,57 @@ def run_by_dataset_type(dataset_type, func, *args):
 
 collected_data = []
 
-# # Intercept SIGINT signal and save collected data before shutting down
-# def shutdown_handler(_signum, _frame):
-#     logger.info("Server is stopping... saving collected data.")
-#     with open('collected_data.json', 'w') as f:
-#         json.dump(collected_data, f, default=str)
+# Intercept SIGINT signal and save collected data before shutting down
+def shutdown_handler(_signum, _frame):
+    logger.info("Server is stopping... saving collected data.")
+    df = pd.DataFrame(collected_data)
+    df.to_csv("collected_data.csv", index=False)
+        
 
-# # Register signal handler for graceful shutdown on Ctrl+C
-# signal.signal(signal.SIGINT, shutdown_handler)
+# Register signal handler for graceful shutdown on Ctrl+C
+signal.signal(signal.SIGINT, shutdown_handler)
 
 app = Flask(__name__)
 CORS(app)
+
+@app.route('/collect', methods=['POST'])
+def collect():
+    start_time = time.time()
+    try:
+        # Retrieve the URL from the request
+        logger.info("Received request to test URL")
+        data = request.get_json()
+        url = data.get('url')
+        html = data.get('html')
+        logger.info(f"URL: {url}")
+
+        # Process URL and determine characteristics
+        characteristics, preprocess_time = time_run_check(is_phishing, url, html)
+        logger.info(f"Data: {characteristics}, Processing time: {preprocess_time}")
+
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        logger.info(f"Request processing time: {elapsed_time}")
+
+        collected_data.append(characteristics)
+
+        return jsonify(
+            {
+                "message": "URL tested successfully!",
+                "is_phishing": not bool(prediction[0]),
+                "processing_time": elapsed_time,
+                "preprocess_time": preprocess_time,
+                "prediction_time": predict_time
+
+            }
+        ), 200
+    except Exception as e:
+        logger.error(f"Error: URL: {str(e)}")
+        return jsonify(
+            {
+                "error": "Unable to predict URL"
+            }
+        ), 400
 
 @app.route('/predict_url', methods=['POST'])
 def predict():
