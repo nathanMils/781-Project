@@ -36,6 +36,7 @@ python-dotenv = "^1.0.1"
 psutil = "^6.1.0"
 xgboost = "^2.1.2"
 selenium = "^4.26.1"
+tqdm = "^4.67.0"
 
 
 [build-system]

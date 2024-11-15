@@ -81,8 +81,7 @@ def write_to_csv(collected_data):
                 ]
                 writer.writerow(headers)
 
-            # Write only the values of the dictionary to the CSV file
-            writer.writerow(collected_data.values())  # Collect values, not keys
+            writer.writerow(collected_data.values())
 
     except Exception as e:
         logger.error(f"Error writing to CSV: {str(e)}")
