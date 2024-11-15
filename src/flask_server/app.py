@@ -232,7 +232,6 @@ def start_server(model_uri, dataset):
     model = mlflow.pyfunc.load_model(model_uri)
     dataset_type = dataset
     logger.info("Starting Flask server")
-    initialize_csv()
     app.run(debug=True, port=5000)
 
 # To start the server, you would call:
