@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 import time
 import pandas as pd
 from tqdm import tqdm
@@ -12,7 +13,7 @@ import requests
 def main():
     chrome_options = Options()
     chrome_options.headless = True
-    
+    chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--no-sandbox')
@@ -20,9 +21,9 @@ def main():
     # extension_path = '/home/nathan/Desktop/781-Project/local-chrome-extension'
     # chrome_options.add_argument(f'--load-extension={extension_path}')
 
-    driver_path = '/home/nathan/Desktop/chromedriver-linux64/chromedriver'
+    driver_path = '/home/nathan/chromedriver-linux64/chromedriver'
 
-    chrome_options.binary_location = "/usr/bin/google-chrome"
+    # chrome_options.binary_location = "/usr/bin/google-chrome"
 
     service = Service(driver_path)
     driver = webdriver.Chrome(service=service, options=chrome_options)
@@ -31,8 +32,27 @@ def main():
         try:
             driver.get(url)
 
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'a')))
+            # Wait for the page to load or timeout after 10 seconds
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
 
+            page_title = driver.title
+            page_source = driver.page_source
+
+            # Send collected data to the Flask API
+            response = requests.post('http://127.0.0.1:5000/collect', json={'url': url, 'html': page_source})
+            if response.status_code != 200:
+                print(f"Error in collecting data for URL: {url}")
+
+            return {
+                'url': url,
+                'title': page_title,
+                'html': page_source
+            }
+
+        except TimeoutException:
+            # Handle timeout exception and send data to the API anyway
+            print(f"Timeout occurred while loading the page: {url}")
+            # Collect data even on timeout
             page_title = driver.title
             page_source = driver.page_source
 
@@ -47,10 +67,12 @@ def main():
             }
 
         except Exception as e:
+            # Handle other exceptions
+            print(f"An error occurred: {e}")
             return None
 
-    df = pd.read_csv('./data/phishtank/verified_online.csv')
-    urls = df['url'].iloc[550:10000].tolist()
+    df = pd.read_csv('./data/phishtank/open_phish.csv')
+    urls = df['url'].iloc[1000:10000].tolist()
 
     collected_data = []
 
