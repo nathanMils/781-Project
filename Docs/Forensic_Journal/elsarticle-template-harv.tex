@@ -126,15 +126,19 @@
 %%             state={},
 %%             country={}}
 
-\author{Nathan Opperman}
+\author{Nathan Opperman\fnref{label1}}
+\ead{u21553832@tuks.co.za}
 
-%% Author affiliation
-\affiliation{organization={},%Department and Organization
-            addressline={}, 
-            city={},
-            postcode={}, 
-            state={},
-            country={}}
+\author{Sheunesu Makura\corref{cor1}\fnref{label2}}
+\ead{makura.sm@up.ac.za}
+
+% Affiliations
+\author[label1,label2]{}
+\affiliation{organization={DigiForS},
+             addressline={University of Pretoria},
+             city={Pretoria},
+             postcode={0002},
+             country={South Africa}}
 
 %% Abstract
 \begin{abstract}
@@ -192,7 +196,7 @@ Digital forensics is a forensic science that forms the processes of identifying,
 
 \vspace{1em}
 
-As mentioned, Network Function Virtualization is one of the technologies utilized in modern 5G Core Networks and was first introduced during the 4th generation of cellular networks. NFV is the virtualization of network functions that traditionally were performed using dedicated hardware appliances such as switches or load balancers. With NFV these network functions are now implemented as software applications known as Virtual Network Functions (VNF) running on commercial off the shelf (COTS) hardware \citep{sharevski2018towards}. This virtualization reduces the dependency on hardware platforms and improves flexibility, scalability, and efficiency of the 5G Core network. Another important advantage that NFV has over dedicated hardware is the reduced development cycle, where hardware requires longer periods to be developed and manufactured, whereas software updates and patches can be deployed more quickly and efficiently \citep{condoluci2018softwarization}. This leads to faster innovation and adaptation to future requirements.
+As mentioned in \ref{sec1}, Network Function Virtualization is one of the technologies utilized in modern 5G Core Networks and was first introduced during the 4th generation of cellular networks. NFV is the virtualization of network functions that traditionally were performed using dedicated hardware appliances such as switches or load balancers. With NFV these network functions are now implemented as software applications known as Virtual Network Functions (VNF) running on commercial off the shelf (COTS) hardware \citep{sharevski2018towards}. This virtualization reduces the dependency on hardware platforms and improves flexibility, scalability, and efficiency of the 5G Core network. Another important advantage that NFV has over dedicated hardware is the reduced development cycle, where hardware requires longer periods to be developed and manufactured, whereas software updates and patches can be deployed more quickly and efficiently \citep{condoluci2018softwarization}. This leads to faster innovation and adaptation to future requirements.
 
 \vspace{1em}
 
@@ -237,7 +241,7 @@ The overall goal of this research is to develop and evaluate an agent-based digi
 
 \subsection{Aims and Limitations}
 \label{sub1sec5}
-Unfortunately, the resources required to fully realize a 5G network to allow testing and development of a digital forensic solution are substantial. This is especially true for the RAN, where as a student I do not have access to technologies such as massive MIMO enabled towers. Well, it is impossible for me to develop a DFR solution for any existing 5G network. There do exist open-source projects such as Open-Air Interface, Open5GS, and UERANSIM that provide software that virtualizes the 5G RAN and provides 5G Core network function implementations for research and testing purposes. However, even with this, it will still be difficult to fully realize a dynamic and feature-rich 5G network, due to the large resource requirements for hosting the many functions involved in a typical 5G network. Hence this research will focus on the 5G Core network with a simple configuration and a fully simulated RAN. Another limitation is that while a prototype should be able to comply with given legal requirements (with some configuration), we will not be incorporating any specific legal requirement as it is beyond the scope of this project due to the expertise and extensive resources needed. Instead, we will discuss how the prototype may be made legally compliant based on its configuration. As mentioned, the main aim of this project is to develop a DFR solution for the 5G Core Network, however on top of this, is the goal to have my solution be independent of the network function software used. This means that the solution should be general in that it can be applied to existing implementations without any drastic changes.
+Unfortunately, the resources required to fully realize a 5G network to allow testing and development of a digital forensic solution are substantial. This is especially true for the RAN, where as a student I do not have access to technologies such as massive MIMO enabled towers. Well, it is impossible for me to develop a DFR solution for any existing 5G network. There do exist open-source projects such as Open-Air Interface, Open5GS, and UERANSIM that provide software that virtualizes the 5G RAN and provides 5G Core network function implementations for research and testing purposes. However, even with this, it will still be difficult to fully realize a dynamic and feature-rich 5G network, due to the large resource requirements for hosting the many functions involved in a typical 5G network. Hence this research will focus on the 5G Core network with a simple configuration and a fully simulated RAN. Another limitation is that while a prototype should be able to comply with given legal requirements (with some configuration), we will not be incorporating any specific legal requirement as it is beyond the scope of this project due to the expertise and extensive resources needed. Instead, we will discuss how the prototype may be made legally compliant based on its configuration. The main aim of this project is to develop a DFR solution for the 5G Core Network, however on top of this, is the goal to have the solution be independent of the network function software utilized.
 
 \subsection{Methodology}
 \label{sub1sec6}
@@ -260,31 +264,13 @@ For the second research methodology, a prototype will be created. This will like
 \label{sub1sub6sec3}
 Simulation and testing will be conducted to evaluate the performance and effectiveness of the prototype DFR solution. By creating a controlled environment that attempts to mimic real-world 5G network scenarios, we can test the prototype under certain conditions to verify its functionality and identify its weaknesses. We will then analyze the results through critical evaluation to determine whether our solution was successful and where there is potential for future improvement.
 
-\newpage
-\subsection{Layout}
-\label{sub1sec7}
-This small section discusses the layout of the remaining sections and briefly explains their focus.
-\subsubsection{Part 1: Introduction}
-\label{sub1sub7sec1}
-In this chapter we provided an introduction with research questions, methodologies, objectives and now the layout of the research project.
-\subsubsection{Part 2: Background}
-\label{sub1sub7sec2}
-In the second chapter, we provide a literature survey on the current state of research. This chapter explores 5G technology, DFR and modern digital forensic methods used in 5G.
-\subsubsection{Part 3: Prototype Design, Implementation and Experimentation}
-\label{sub1sub7sec3}
-\textbf{Chapter 3: Prototype Design and Implementation Details -} In this chapter we discuss details regarding the software, tools and concepts used in the prototype, the 5G Core Network and RAN.
-\\\\
-\textbf{Chapter 4: Prototype Experimentation and Insights -} In this chapter we will discuss the final results of the experimentation that was done with the prototype and the 5G Core Network setup.
-\subsubsection{Part 4: Conclusion}
-\label{sub1sub7sec4}
-\textbf{Chapter 5: Evaluation -} In this section we will provide an analysis of the prototype and its ability for real time detection, forensic evidence collection, and event reconstruction.
-\\\\
-\textbf{Chapter 5: Conclusion -} This chapter provides a final summary of the research project and discusses some of the many possible additions that can be made in terms of future research.
-\newpage
+\vspace{1em}
 
-\section{Chapter 2: Literature Study}
+The remainder of this work is structured as follows. First, We begin with a background on 5G technology, Digital Forensic Readiness (DFR), and modern digital forensic methods used in 5G networks. Following that, we discuss the prototype design and implementation details, including the software, tools, and concepts used, along with an overview of the 5G Core Network and RAN. After that, we present the experimentation results, analyzing the prototype's performance in the 5G Core Network setup. Finally, the conclusion evaluates the prototype’s capabilities for real-time detection, forensic evidence collection, and event reconstruction, while also suggesting areas for future research.
+
+\section{Background}
 \label{sec2}
-This literature study aims to explore and briefly explain referenced papers and other existing research on Digital Forensic Readiness (DFR) within previous and current generations of cellular networks. First, we will discuss Digital Forensics and Digital Forensic Readiness (DFR) and the requirements for DFR. Next, we examine current digital forensic processes in LTE and LTE-Advanced (4G). Lastly, we look at an existing model for DFR in NFV.
+This section provides a brief introduction into existing research on Digital Forensic Readiness (DFR), and the requirements for DFR. Additionally, we will discuss DFR within previous and current generations of cellular networks, along with some existing models for DFR in NFV.
 
 \subsection{Digital Forensics}
 \label{sub2sec1}
@@ -303,10 +289,10 @@ Digital Forensic Readiness (DFR) is defined as having two objectives. The first 
 Monitoring corresponds to the first DFR objective of maximizing the usefulness of collected data by ensuring that relevant information is captured and retained. Monitoring is an important aspect of any DFR solution. By proactively monitoring various aspects of a system you collect crucial information that can be utilized in forensic investigations as evidence. However, it is also important the data collected is useful and formatted such that it can be analyzed quickly and effectively. Therefore, what information is collected should depend on the environment \citep{tan2001forensic}. In the case of Networking, it may be best to collect information from firewalls, IDS systems, or in the case of 5G Networks, VNFs.
 
 	\item \textbf{Assurance:}
-Information assurance involves security measures such as encryption, access controls, and authentication protocols to protect data from unauthorized access or tampering. Information assurance is essential to ensure that information collected is admissible in court \citep{9089494} and forms part of the first objective of maximizing the usefulness of the collected data. Furthermore, a chain of custody should be established to document the handling of evidence throughout its lifecycle. This includes documentation and timestamping of its creation, processing, and storage up until its potential presentation as evidence in court. This ensures that any evidence presented in court can be proven to be unaltered and reliable, thereby enhancing its credibility \citep{tan2001forensic}.
+Information assurance involves security measures such as encryption, access controls, and authentication protocols to protect data from unauthorized access or tampering. Information assurance is essential to ensure that information collected is admissible in court \citep{9089494} and forms part of the first objective of maximizing the usefulness of the collected data. Furthermore, a chain of custody should be established to document the handling of evidence throughout its life-cycle. This includes documentation and time-stamping of its creation, processing, and storage up until its potential presentation as evidence in court. This ensures that any evidence presented in court can be proven to be unaltered and reliable, thereby enhancing its credibility \citep{tan2001forensic}.
 
 	\item \textbf{Cost:}
-Cost is likely the most important aspect since one of the objectives mentioned is to minimize the costs of digital forensics. If a DFR solution does not provide the value to justify its cost then it is a failed solution. This takes into account the usefulness/value of the collected data and the resource costs of collecting such data. The resource costs may include the actual costs of the hardware/software used, the computational costs of running such hardware/software, and the effect that the solution has on other components of the business. Another important aspect of cost is time, the "Honeypot Project" referenced by John Tan \citep{tan2001forensic} showed that investigators spent around 80 hours analyzing a compromised system. However, the attackers only took 2 hours to compromise the system. It is clear that a DFR solution should be lightweight and that DFR processes should avoid negatively affecting typical business operations while simultaneously reducing the time required to analyze the collected data.
+Cost is likely the most important aspect since one of the objectives of DFR is to minimize the costs of digital forensics. If a DFR solution does not provide the value to justify its cost then it is a failed solution. This takes into account the "usefulness" of the collected data and the resource costs of collecting such data. The resource costs may include the actual costs of the hardware/software used, the computational costs of running such hardware/software, and the effect that the solution has on other components of the business. Another important aspect of cost is time, the "Honeypot Project" referenced by John Tan \citep{tan2001forensic} showed that investigators spent around 80 hours analyzing a compromised system. However, the attackers only took 2 hours to compromise the system. It is clear that a DFR solution should be lightweight and that DFR processes should avoid negatively affecting typical business operations while simultaneously reducing the time required to analyze the collected data.
 
 	\item \textbf{Compliance:}
 Regulatory Compliance is an especially important requirement for a DFR solution in 5G networks. There are many aspects to regulatory compliance that encompass privacy law, and government-mandated data retention requirements that vary based on jurisdiction. For example, Section 14: "Retention and restriction of records"  of the Protection of the Personal Information Act (POPIA) states that "records of personal information must not be retained any longer than is necessary unless the responsible party reasonably requires the records for lawful purposes related to its functions or activities" \citep{POPIA2019}. However, there are many other aspects such as disclosure and transparency. Personally identifiable information (PII) is one such aspect that needs to be considered, in particular IP addresses. According to the  General Data Protection Regulation (GDPR), IP addresses are considered online identifiers and are classified as PII \citep{regulation2016regulation}. PII requires further consideration regarding its collection, use, and disclosure.  Any DFR solution should be created such that it complies with any regulations that are applicable or can be configured to do so.
@@ -384,9 +370,9 @@ While this model does provide a basis for this research, no prototype was fully 
 
 \newpage
 
-\section{Chapter 3: Prototype Design and Implementation Details}
+\section{Prototype Design and Implementation Details}
 \label{sec3}
-In this chapter, we discuss the design and implementation details of the \textbf{5G Digital Forensic Readiness Tool} (5GDFRT), the prototype developed to meet our Digital Forensic Readiness (DFR) requirements. Firstly, we discuss the technologies used to host the 5GDFRT, this discussion includes how network functions are deployed and managed, along with the options available for managing DFR components. We then cover the software and configurations used for the 5GDFRT, including, the main components and their roles, and how each component contributes to fulfilling DFR requirements. Following this we will cover the 5G Core Network software used as part of our 5G Core Testbed.
+In this section, we discuss the design and implementation details of the \textbf{5G Digital Forensic Readiness Tool} (5GDFRT), the prototype developed to meet our Digital Forensic Readiness (DFR) requirements. Firstly, we discuss the technologies used to host the 5GDFRT, this discussion includes how network functions are deployed and managed, along with the options available for managing DFR components. We then cover the software and configurations used for the 5GDFRT, including, the main components and their roles, and how each component contributes to fulfilling DFR requirements. Following this we will cover the 5G Core Network software used as part of our 5G Core Testbed.
 
 \subsection{Platform}
 \label{sub3sec1}
@@ -419,7 +405,7 @@ With OpenStack as our NFVi, we utilized Tacker to manage the VNFs. Tacker is an 
 
 \vspace{1em}
 
-For this project, we created a single Virtual Network Function Descriptor (VNFD) for each network function as well as for some of the other necessary components. A VNFD is an information model that describes how a Virtual Network Function (VNF) should be deployed, configured, and managed within an NFV environment. Tacker VNFDs are based on the ETSI NFV-SOL001 v2.6.1 standard \citep{etsi2023}. These VNFDs allow for multiple versions or "flavors" for alternate definitions of each network function. For this project, we created two variants: DFR enabled (with DFR processes) and DFR disabled (without DFR processes). This feature is particularly useful for addressing the issues mentioned in Chapter 2 regarding jurisdiction by essentially only deploying enabled variants in areas/jurisdictions with the required authorizations for DFR.
+For this project, we created a single Virtual Network Function Descriptor (VNFD) for each network function as well as for some of the other necessary components. A VNFD is an information model that describes how a Virtual Network Function (VNF) should be deployed, configured, and managed within an NFV environment. Tacker VNFDs are based on the ETSI NFV-SOL001 v2.6.1 standard \citep{etsi2023}. These VNFDs allow for multiple versions or "flavors" for alternate definitions of each network function. For this project, we created two variants: DFR enabled (with DFR processes) and DFR disabled (without DFR processes). This feature is particularly useful for addressing the issues mentioned in \ref{sub2sec3} regarding jurisdiction by only deploying enabled variants in areas with acquired authorizations for DFR.
 
 \vspace{1em}
 
@@ -523,7 +509,7 @@ One of Zeek's most valuable features is its extensibility. It offers a powerful 
 
 \vspace{1em}
 
-Furthermore, this flexibility and customizability can be leveraged to address jurisdiction and regulatory compliance challenges mentioned in Chapter 2. By configuring Zeek scripts for each agent, you can ensure that they comply with any applicable legal requirements. For example, in a highly distributed 5G Core Network with network functions deployed across different regions, Zeek scripts can be defined to align with the specific regulations of each region. This approach also extends to tools like Elasticsearch and Logstash, where different data retention, disclosure, and access policies may be set for each Log Server, ensuring that compliance is maintained across the entire system. This region-based configuration can be facilitated by Tacker's VNFD "flavors" by having a dedicated flavor for each network function for each region.
+Furthermore, this flexibility and customizability can be leveraged to address jurisdiction and regulatory compliance challenges mentioned in \ref{sub2sec3}. By configuring Zeek scripts for each agent, you can ensure that they comply with any applicable legal requirements. For example, in a highly distributed 5G Core Network with network functions deployed across different regions, Zeek scripts can be defined to align with the specific regulations of each region. This approach also extends to tools like Elasticsearch and Logstash, where different data retention, disclosure, and access policies may be set for each Log Server, ensuring that compliance is maintained across the entire system. This region-based configuration can be facilitated by Tacker's VNFD "flavors" by having a dedicated flavor for each network function for each region.
 
 \subsubsection{Filebeat}
 \label{sub3sub3sec2}
@@ -713,9 +699,9 @@ It is important to note the VDU marked EXT\_DN (External Data Network) in figure
 \end{figure}
 \newpage
 
-\section{Chapter 4: Prototype Experimentation and Insights}
+\section{Prototype Experimentation and Insights}
 \label{sec4}
-In this chapter, we discuss the experiments that have been conducted to evaluate our 5G Digital Forensics Readiness Tool (5GDFRT). These experiments are rather simple but should provide the results needed to evaluate the 5GDFRT's ability to monitor our basic 5G Core Network. There are two main aspects in which the 5GDFRT needs to be evaluated. Firstly, there is its ability to detect malicious behavior in real time, and the second is event reconstruction. This chapter is constructed as follows, first, we discuss the experiments and results collected to evaluate real-time detection capabilities. Then, we discuss event reconstruction, with details related to NF communication and application logs.
+In this section, we discuss the experiments that have been conducted to evaluate our 5G Digital Forensics Readiness Tool (5GDFRT). These experiments are rather simple but should provide the results needed to evaluate the 5GDFRT's ability to monitor our basic 5G Core Network. There are two main aspects in which the 5GDFRT needs to be evaluated. Firstly, there is its ability to detect malicious behavior in real time, and the second is event reconstruction. This section is constructed as follows, first, we discuss the experiments and results collected to evaluate real-time detection capabilities. Then, we discuss event reconstruction, with details related to NF communication and application logs.
 
 \subsection{Real-time Detection}
 \label{sub4sec1}
@@ -795,7 +781,7 @@ Once again, we can detect this attack by looking at the log data collected by th
 
 \subsection{Event Reconstruction}
 \label{sub4sec2}
-As mentioned in Chapter 2, event reconstruction is one of the most vital processes in forensic investigations, and our 5GDFRT should be able to facilitate this. In 5G Core Networks, we can sort events into two main categories: Control Plane events, generated by interactions between network functions, and User Plane events, generated by user activity. Our 5GDFRT solution is able to capture both.
+As mentioned in \ref{sub2sub2sec1}, event reconstruction is one of the most vital processes in forensic investigations, and our 5GDFRT should be able to facilitate this. In 5G Core Networks, we can sort events into two main categories: Control Plane events, generated by interactions between network functions, and User Plane events, generated by user activity. Our 5GDFRT solution is able to capture both.
 
 \subsubsection{Control Plane Events}
 \label{sub4sub2sec1}
@@ -862,7 +848,7 @@ The User Plane events we refer to are activities related to the user's interacti
 
 \vspace{1em}
 
-In order to test this we utilized the SOCKS5 proxy server, mentioned in 3.8.3.3, along with Firefox to generate browser traffic. It is important to note that the browser traffic was encrypted using HTTPS (a common situation), which meant that certain log types such as http.log and http2.log, which require unencrypted traffic, were not available. However, Zeek does provide a valuable log type specifically for this situation: the ssl.log. As mentioned in Chapter 3, this log captures information related to SSL/TLS sessions, allowing us to analyze secure communications and extract relevant data from encrypted traffic.
+In order to test this we utilized the SOCKS5 proxy server, mentioned in 3.8.3.3, along with Firefox to generate browser traffic. It is important to note that the browser traffic was encrypted using HTTPS (a common situation), which meant that certain log types such as http.log and http2.log, which require unencrypted traffic, were not available. However, Zeek does provide a valuable log type specifically for this situation: the ssl.log. As mentioned in \ref{sub3sub3sec1}, this log captures information related to SSL/TLS sessions, allowing us to analyze secure communications and extract relevant data from encrypted traffic.
 
 \vspace{1em}
 
@@ -878,13 +864,13 @@ We can observe this in the tabularized ssl.log data collected from the UPF in fi
 Based on figure \ref{fig:ssl-browser-traffic}, we can see that the browser accessed different Google related services, including YouTube and Google fonts. It is clear that even for encrypted user traffic, the 5GDFRT solution was able to capture information that can aid in understanding what a user is doing at a given point in time. Furthermore, by combining and correlating this with the dns.log and conn.log data we can obtain an even greater understanding of a user's activities.
 
 \newpage
-\section{Chapter 5: Evaluation}
+\section{Evaluation}
 \label{sec5}
-This chapter focuses on the analysis of our 5GDFRT and how it meets the requirements presented in Chapter 2. First we will start with monitoring, followed by information assurance, followed by cost and regulatory compliance. After that, we will discuss some of the issues and potential solutions to these issues. Finally, we will discuss some potential enhancements that could be included in a future implementation.
+In this section we focus on the analysis of our 5GDFRT and how it meets the requirements presented in \ref{sub2sub2sec1}. First we will start with monitoring, followed by information assurance, followed by cost and regulatory compliance. After that, we will discuss some of the issues and potential solutions to these issues. Finally, we will discuss some potential enhancements that could be included in a future implementation.
 
 \subsection{Monitoring}
 \label{sub5sec1}
-As highlighted in Section 2.2 (Monitoring), the value of the data is crucial to DFR, and "What to log?" is an important question. For 5G Core Networks, it is clear that the data collected should be related to networking, traffic, and the state of VNFs. Zeek as a network security monitor combined with application logs proved to be perfect for this. Zeek managed to capture data that proved to be useful for both real-time detection and event reconstruction, while the application logs proved to be useful for capturing highly valuable and detailed information related to the state of both network functions and user devices, as illustrated in Chapter 4. Zeek's comprehensive logs allow analysts to easily correlate and identify unusual behavior effectively while the detailed application logs provided the missing application-level details and context that Zeek missed. And so by combining Zeek with application logs, we were able to collect and store useful data that facilitates a comprehensive and accurate framework for event reconstruction.
+As highlighted in Section 2.2 (Monitoring), the value of the data is crucial to DFR, and "What to log?" is an important question. For 5G Core Networks, it is clear that the data collected should be related to networking, traffic, and the state of VNFs. Zeek as a network security monitor combined with application logs proved to be perfect for this. Zeek managed to capture data that proved to be useful for both real-time detection and event reconstruction, while the application logs proved to be useful for capturing highly valuable and detailed information related to the state of both network functions and user devices, as illustrated in \ref{sec4}. Zeek's comprehensive logs allow analysts to easily correlate and identify unusual behavior effectively while the detailed application logs provided the missing application-level details and context that Zeek missed. And so by combining Zeek with application logs, we were able to collect and store useful data that facilitates a comprehensive and accurate framework for event reconstruction.
 
 \subsection{Information Assurance}
 \label{sub5sec2}
@@ -916,52 +902,20 @@ While the logs generated by each network function do provide valuable informatio
 
 \subsubsection{Specialization}
 \label{sub5sub5sec2}
-As mentioned in Chapter 3, Zeek provides a framework for creating customized scripts and configurations that can be applied based on the role and legal requirements of the network function it is monitoring. For example, the agent positioned to monitor the UPF may be under strict legal regulations that restrict the capture of certain types of user traffic. You can then configure Zeek to only capture information such as total packets processed/dropped and not HTTP or DNS requests. By specializing agents to comply with different legal requirements and VNF roles, we can effectively maximize the monitoring of the network while still complying with legal constraints.
+As mentioned in \ref{sub3sub3sec1}, Zeek provides a framework for creating customized scripts and configurations that can be applied based on the role and legal requirements of the network function it is monitoring. For example, the agent positioned to monitor the UPF may be under strict legal regulations that restrict the capture of certain types of user traffic. You can then configure Zeek to only capture information such as total packets processed/dropped and not HTTP or DNS requests. By specializing agents to comply with different legal requirements and VNF roles, we can effectively maximize the monitoring of the network while still complying with legal constraints.
 
 \newpage
-\section{Chapter 6: Conclusion}
+\section{Conclusion}
 \label{sec6}
-This chapter concludes the report by summarising the work done during the course of the research project. Firstly we start by revisiting the problem statement and research questions. Next, we will discuss the potential for future research with the 5GDFRT prototype in mind. Finally, the report will be concluded with a final summary of the research project.
-
-\subsection{Problem Statement and Research Questions Revisited}
-\label{sub6sec1}
-The goal of this research was to attempt to resolve the lack of Digital Forensic Readiness in 5G (Core) Networks. The problem was then expanded to include identifying the specific challenges associated with DFR in 5G. We answered this as part of the literature study and found that virtualization, jurisdiction issues, and high data volumes were the main challenges and that there was a lack of research in this area.
+This research aimed to address the challenges of digital forensics introduced by the complexity and dynamic nature of 5G networks, as outlined in the problem statement. With 5G technology introducing significant advancements in telecommunications, such as increased scale, virtualization, and lower latency. These changes pose new obstacles to digital forensics and cybersecurity. As noted earlier, traditional forensic strategies are insufficient to address these challenges.
 
 \vspace{1em}
 
-The second question asked what the requirements for DFR are. We once again answered this question as part of our literature study and found that DFR encompasses many requirements that can depend on the organization implementing 5G and the resources available. Ultimately, it was narrowed down to ensuring 4 requirements that could either be reasonably met or at the very least integrated with future research. While a 5GDFRT prototype was created that managed to address the data collection and information assurance requirements of DFR, some of the other requirements do require further research and incorporation for the 5GDFRT to be fully validated.
+In response to these challenges, we designed and implemented the 5G Digital Forensic Readiness Tool (5GDFRT), we then tested it using a basic 5G Core Testbed. The results demonstrated that the 5GDFRT was able to successfully detect common attacks, such as Denial of Service (DoS) and IP Fragmentation attacks, while facilitating secure log collection and event reconstruction. Although the prototype addressed key DFR requirements, further research is needed to assess its impact on 5G network performance and to tackle the cost and regulatory compliance challenges that will be crucial for real-world deployment.
 
 \vspace{1em}
 
-The third question was about how a prototype might be tested. We effectively answered this question by constructing our own basic 5G Core Testbed that allowed us to simulate various attack scenarios that allowed us to evaluate our 5GDFRT effectively. While this did effectively answer the question, given the resources available, it also became clear that further research requires a more complex and comprehensive 5G Core Network in order to validate some of the cost and regulatory compliance requirements. The final question was with regard to whether a prototype could be developed to detect common attacks. The answer to this is yes, even based on the smaller scale of this project, the data captured and the visualizations used demonstrated clear signs of DoS, and IP Fragmentation attacks.
-
-\vspace{1em}
-
-Overall I do believe that we were able to achieve the desired research objective of developing a prototype that facilitates real-time incident detection, efficient log collection, and effective forensic analysis as demonstrated in Chapters 4 and 5. However, weather this solution significantly affects the performance and efficiency of 5G networks requires further research.
-
-\subsection{Further Research}
-\label{sub6sec2}
-This next section describes possible avenues for further research.
-
-\subsubsection{A more advanced 5G Testbed and greater resources}
-\label{sub6sub2sec1}
-While admittedly, most of the effort of this project was focused on implementing a basic 5G Core Testbed, and while it allowed for a great deal of experimentation and evaluation, it is clear that a more advanced setup may be required for further research and testing, or at the very least more resources to allow a more advanced core network with multiple network slices with more network functions.
-
-\subsubsection{DFR in the Radio Access Network (RAN)}
-\label{sub6sub2sec2}
-This research focused primarily on the core network, due to resource limitations. Therefore there is an oppurtunity for research to be conducted  on the potential for DFR in the Radio Access Network (RAN).
-
-\subsubsection{Cost and Regulatory Compliance}
-\label{sub6sub2sec3}
-While efforts were made to reduce the resource costs and allow for regulatory compliance in the design 5GDFRT discussed in this report, an in-depth analysis into the efficiency, performance, and legal requirements that a DFR solution for 5G Networks should adhere to requires further research, testing, and expertise.
-
-\subsection{Conclusion}
-\label{sub6sec3}
-To summarise, this research project conducted a literature review to determine the current state of digital forensics and digital forensic readiness in 5G, this review found that there is a lack of a proactive digital forensic readiness approach to 5G Networks. Following this, a prototype 5G Digital Forensic Readiness Tool (5GDFRT) was designed and implemented to securely collect and store useful data so that it can be analyzed and utilized as part of a potential forensic investigation. A 5G Testbed was then designed and implemented as part of the implementation and evaluation of the 5GDFRT. I consider both the basic 5G Core Testbed and the 5GDFRT as contributions of this research. The 5GDFRT was then tested and evaluated using the Testbed with attack scenarios to determine if it was able to capture and detect these attacks. We then evaluated the results as part of a critical evaluation and found that the 5GDFRT could in fact detect these attacks and that the collected data could effectively and efficiently be used for event reconstruction.
-
-\vspace{1em}
-
-Overall, this research project showed that a DFR solution could at the very least satisfy monitoring and information assurance requirements, and explained how it could potentially meet the cost and regulatory compliance requirements.
+Ultimately, this work contributes to digital forensic readiness in 5G networks, providing a basic prototype and a broader proof of concept for how DFR strategies can be adapted to the unique characteristics of 5G. Further research will be needed to enhance the prototype and explore additional avenues, such as DFR in the Radio Access Network (RAN), as well as testing in more advanced 5G environments.
 
 \newpage
 \bibliographystyle{elsarticle-harv}
