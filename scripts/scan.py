@@ -1,7 +1,7 @@
 import asyncio
 import httpx
 import pandas as pd
-from tqdm import tqdm
+from tqdm.asyncio import tqdm  # Use tqdm for async
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -24,7 +24,6 @@ def configure_driver():
 
 async def post_to_flask_api(client, url, page_source):
     try:
-        print(f"Posting data for URL: {url}")
         # Asynchronously post data to Flask API
         response = await client.post(
             'http://127.0.0.1:5000/collect',
@@ -52,14 +51,14 @@ def collect_website_info(driver, url):
             'html': page_source
         }
     except Exception as e:
-        print(f"Error accessing {url}: {e}")
         return None
 
 async def process_urls(driver, urls):
     collected_data = []
     async with httpx.AsyncClient() as client:
         tasks = []
-        for url in urls:
+        # Wrap tqdm around the URLs to show progress
+        for url in tqdm(urls, desc="Processing URLs", ncols=100):
             info = collect_website_info(driver, url)
             if info:
                 collected_data.append(info)
@@ -74,7 +73,7 @@ async def process_urls(driver, urls):
 def main():
     driver = configure_driver()
     df = pd.read_csv('./data/phishtank/verified_online.csv')
-    urls = df['url'].iloc[2000:10000].tolist()
+    urls = df['url'].iloc[5000:10000].tolist()
 
     # Run the async process to collect and post data
     loop = asyncio.get_event_loop()
