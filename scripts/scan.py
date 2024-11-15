@@ -24,6 +24,7 @@ def configure_driver():
 
 async def post_to_flask_api(client, url, page_source):
     try:
+        print(f"Posting data for URL: {url}")
         # Asynchronously post data to Flask API
         response = await client.post(
             'http://127.0.0.1:5000/collect',
@@ -73,7 +74,7 @@ async def process_urls(driver, urls):
 def main():
     driver = configure_driver()
     df = pd.read_csv('./data/phishtank/verified_online.csv')
-    urls = df['url'].iloc[1000:10000].tolist()
+    urls = df['url'].iloc[2000:10000].tolist()
 
     # Run the async process to collect and post data
     loop = asyncio.get_event_loop()
