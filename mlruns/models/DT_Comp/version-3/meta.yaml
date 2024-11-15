@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1731648426386
+current_stage: None
+description: ''
+last_updated_timestamp: 1731648426386
+name: DT_Comp
+run_id: 28880352f4554fd9a1a2ae79dc271bce
+run_link: ''
+source: file:///C:\Users\natei\Desktop\COS 781 Project\781-Project\configs\models/28880352f4554fd9a1a2ae79dc271bce/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///C:\Users\natei\Desktop\COS 781 Project\781-Project\configs\models/28880352f4554fd9a1a2ae79dc271bce/artifacts/model
+user_id: null
+version: 3
