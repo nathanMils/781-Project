@@ -948,7 +948,8 @@ def collect_data(url, html):
         "page_rank": is_page_rank(url),
         "google_index": is_google_index(url),
         "links_pointing_to_page": is_links_pointing_to_page(url, soup),
-        "statistical_report": is_statistical_report(url, domain)
+        "statistical_report": is_statistical_report(url, domain),
+        "result": 1
     }
 
     for key, value in data.items():

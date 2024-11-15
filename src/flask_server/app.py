@@ -78,7 +78,8 @@ def write_to_csv(collected_data):
                     "page_rank",
                     "google_index",
                     "links_pointing_to_page",
-                    "statistical_report"
+                    "statistical_report",
+                    "result"
                 ]
                 writer.writerow(headers)
 

@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 import pandas as pd
 from tqdm import tqdm
+import requests
 
 def main():
     chrome_options = Options()
@@ -16,8 +17,8 @@ def main():
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--no-sandbox')
     
-    extension_path = '/home/nathan/Desktop/781-Project/local-chrome-extension'
-    chrome_options.add_argument(f'--load-extension={extension_path}')
+    # extension_path = '/home/nathan/Desktop/781-Project/local-chrome-extension'
+    # chrome_options.add_argument(f'--load-extension={extension_path}')
 
     driver_path = '/home/nathan/Desktop/chromedriver-linux64/chromedriver'
 
@@ -34,12 +35,15 @@ def main():
 
             page_title = driver.title
             page_source = driver.page_source
-            links = [a.get_attribute('href') for a in driver.find_elements(By.TAG_NAME, 'a')]
+
+            response = requests.post('http://127.0.0.1:5000/collect', json={'url': url, 'html': page_source})
+            if response.status_code != 200:
+                print(f"Error in collecting data for URL: {url}")
 
             return {
-                "title": page_title,
-                "links": links,
-                "source": page_source
+                'url': url,
+                'title': page_title,
+                'html': page_source
             }
 
         except Exception as e:

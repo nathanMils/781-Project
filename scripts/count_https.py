@@ -16,3 +16,7 @@ perc_http = (http_count / total) * 100
 
 print(f'Percentage of HTTPS URLs: {perc_https:.2f}%')
 print(f'Percentage of HTTP URLs: {perc_http:.2f}%')
+
+google_urls = df[df['url'].str.contains('https://www.google.com')]
+print('URLs containing https://www.google.com:')
+print(google_urls['url'].to_string(index=False))
