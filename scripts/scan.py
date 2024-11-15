@@ -22,6 +22,8 @@ def main():
     # Path to ChromeDriver
     driver_path = '/home/nathan/Desktop/chromedriver-linux64/chromedriver'
 
+    chrome_options.binary_location = "/usr/bin/google-chrome"
+
     # Initialize the WebDriver service
     service = Service(driver_path)
     driver = webdriver.Chrome(service=service, options=chrome_options)
