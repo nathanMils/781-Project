@@ -896,6 +896,72 @@ def is_phishing_no_html_time(url):
     
     return data, timing_data
 
+def validate_value(value):
+    """Ensures the value is either 0, -1, or 1. Returns None if not."""
+    if value in {0, -1, 1}:
+        return value
+    return None
+
+def collect(url, html): 
+    """Determines if a URL is a phishing website or not."""
+    if not check_if_valid(url):
+        logger.error(f"Invalid URL: {url}")
+        return None
+    response = check_if_reachable(url)
+    if not response:
+        logger.error(f"Unreachable URL: {url}")
+        return None
+    soup = parse_html_direct(html)
+    if not soup:
+        logger.error(f"Error parsing HTML content for URL: {url}")
+        return None
+    domain = get_whois(url)
+    if not domain:
+        logger.error(f"Error fetching WHOIS information for URL: {url}")
+        return None
+    
+    data = {
+        "having_ip_address": is_having_ip(url),
+        "url_length": is_url_long(url),
+        "shortining_service": is_shortening_service(url),
+        "having_at_symbol": is_having_at_symbol(url),
+        "double_slash_redirecting": is_double(url),
+        "prefix_suffix": is_prefix_suffix(url),
+        "having_sub_domain": is_having_sub_domain(url),
+        "sslfinal_state": is_https(url),
+        "domain_registration_length": is_domain_registration_length(domain),
+        "favicon": is_favicon(url, soup),
+        "port": is_port(url),
+        "https_token": is_https_token(url),
+        "request_url": is_request_url(url, soup),
+        "url_of_anchor": is_url_of_anchor(url, soup),
+        "links_in_tags": is_links_in_tags(url, soup),
+        "sfh": is_sfh(url, soup),
+        "submitting_to_email": is_submitting_to_email_direct(html, soup),
+        "abnormal_url": is_abnormal_url(url),
+        "redirect": is_redirect(response),
+        "on_mouseover": is_on_mouseover(soup),
+        "rightclick": is_rightclick(soup),
+        "popupwindow": is_popupwindow(soup),
+        "iframe": is_iframe(soup),
+        "age_of_domain": is_age_of_domain(domain),
+        "dnsrecord": is_dns_record(domain),
+        "web_traffic": is_web_traffic(url),
+        "page_rank": is_page_rank(url),
+        "google_index": is_google_index(url),
+        "links_pointing_to_page": is_links_pointing_to_page(url, soup),
+        "statistical_report": is_statistical_report(url, domain)
+    }
+
+    for key, value in data.items():
+        validated_value = validate_value(value)
+        if validated_value is None:
+            data = None
+            break
+        data[key] = validated_value
+    
+    return None
+
 def is_phishing(url, html):
     """Determines if a URL is a phishing website or not."""
     if not check_if_valid(url):
