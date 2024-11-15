@@ -30,7 +30,7 @@ def main():
         """
         try:
             # Use 'requests.head' to only check the status of the URL without downloading the entire content
-            response = requests.head(url, allow_redirects=True, timeout=10)
+            response = requests.head(url, allow_redirects=True, timeout=1)
             return response.status_code == 200
         except requests.RequestException:
             return False
@@ -39,7 +39,7 @@ def main():
         try:
             # Use Selenium to get the URL and process the page
             driver.get(url)
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'a')))
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'div')))
 
             # Check if the redirected URL is valid
             if not is_url_online(url):
