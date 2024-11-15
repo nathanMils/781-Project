@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import csv
 import pandas as pd
-from process import is_phishing_information_gain, is_phishing_composite, is_phishing
+from process import is_phishing_information_gain, is_phishing_composite, is_phishing, collect_data
 
 import pandas as pd
 
@@ -101,7 +101,7 @@ def collect():
         url = data.get('url')
         html = data.get('html')
 
-        characteristics, preprocess_time = time_run_check(is_phishing, url, html)
+        characteristics, preprocess_time = time_run_check(collect_data, url, html)
         logger.info(f"Data: {characteristics}, Processing time: {preprocess_time}")
 
         if characteristics is None:

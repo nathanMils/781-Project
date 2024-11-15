@@ -166,12 +166,10 @@ def is_https(url):
         issuer = dict(x[0] for x in cert['issuer'])
         issuer_common_name = issuer.get('commonName', '')
 
-        logger.info(f"Issuer Data: {issuer}")
 
         if not cert:
             return 1
         
-        logger.info(f"Issuer: {issuer_common_name}")
 
         if not is_trusted_issuer(issuer_common_name):
             return 0
@@ -181,7 +179,6 @@ def is_https(url):
 
 
         age_in_years = (datetime.now() - valid_from).days / 365.25
-        logger.info(f"Age in years: {age_in_years}")
         if age_in_years >= 1:
             return 1
         else:
@@ -902,7 +899,7 @@ def validate_value(value):
         return value
     return None
 
-def collect(url, html): 
+def collect_data(url, html): 
     """Determines if a URL is a phishing website or not."""
     if not check_if_valid(url):
         logger.error(f"Invalid URL: {url}")
@@ -962,7 +959,7 @@ def collect(url, html):
 
     data["website_url"] = url
     
-    return None
+    return data
 
 def is_phishing(url, html):
     """Determines if a URL is a phishing website or not."""
