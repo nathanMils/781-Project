@@ -12,9 +12,10 @@ from selenium.webdriver.support import expected_conditions as EC
 def configure_driver():
     chrome_options = Options()
     chrome_options.headless = True
+    chrome_options.add_argument('--headless')  # Run headless
+    chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
-    chrome_options.add_argument('--no-sandbox')
     
     driver_path = '/home/nathan/chromedriver-linux64/chromedriver'
     service = Service(driver_path)
