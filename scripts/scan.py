@@ -43,7 +43,7 @@ def main():
     
     df = pd.read_csv('./data/phishtank/verified_online.csv')
 
-    urls = df['url'].head(1000).tolist()
+    urls = df['url'].head(2000).tolist()
 
     for url in urls:
         info = collect_website_info(url)
