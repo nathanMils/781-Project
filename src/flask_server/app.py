@@ -44,7 +44,7 @@ def write_to_csv(collected_data):
         # Open the CSV file and append new data
         with open(CSV_FILE_PATH, mode='a', newline='') as file:
             writer = csv.writer(file)
-            
+
             # If the file is empty, write headers
             if file.tell() == 0:
                 headers = [
@@ -80,11 +80,13 @@ def write_to_csv(collected_data):
                     "statistical_report"
                 ]
                 writer.writerow(headers)
-            
-            # Write the actual collected data (characteristics, not headers)
-            writer.writerow(collected_data)
+
+            # Write only the values of the dictionary to the CSV file
+            writer.writerow(collected_data.values())  # Collect values, not keys
+
     except Exception as e:
         logger.error(f"Error writing to CSV: {str(e)}")
+
 
 
 app = Flask(__name__)
