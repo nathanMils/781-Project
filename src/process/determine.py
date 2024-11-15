@@ -921,7 +921,7 @@ def collect(url, html):
         return None
     
     data = {
-        "website": url,
+        "website_url": url,
         "having_ip_address": is_having_ip(url),
         "url_length": is_url_long(url),
         "shortining_service": is_shortening_service(url),

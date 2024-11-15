@@ -48,6 +48,7 @@ def write_to_csv(collected_data):
             # If the file is empty, write headers
             if file.tell() == 0:
                 headers = [
+                    "website_url",
                     "having_ip_address",
                     "url_length",
                     "shortining_service",
