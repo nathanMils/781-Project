@@ -9,7 +9,7 @@ import pandas as pd
 
 def main():
     chrome_options = Options()
-    chrome_options.headless = True  # Run in headless mode
+    chrome_options.headless = False  # Run in headless mode
     
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
