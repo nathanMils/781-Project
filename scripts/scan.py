@@ -39,7 +39,7 @@ def main():
         try:
             # Use Selenium to get the URL and process the page
             driver.get(url)
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'div')))
+            WebDriverWait(driver, 4).until(EC.presence_of_element_located((By.TAG_NAME, 'div')))
 
             # Check if the redirected URL is valid
             if not is_url_online(url):
@@ -65,7 +65,7 @@ def main():
 
     # Load the list of URLs
     df = pd.read_csv('./data/phishtank/verified_online.csv')
-    urls = df['url'].iloc[500:10000].tolist()
+    urls = df['url'].iloc[550:10000].tolist()
 
     collected_data = []
 
