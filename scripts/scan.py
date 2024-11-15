@@ -17,9 +17,6 @@ def main():
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--no-sandbox')
     
-    # extension_path = '/home/nathan/Desktop/781-Project/local-chrome-extension'
-    # chrome_options.add_argument(f'--load-extension={extension_path}')
-
     driver_path = '/home/nathan/Desktop/chromedriver-linux64/chromedriver'
 
     chrome_options.binary_location = "/usr/bin/google-chrome"
@@ -27,11 +24,27 @@ def main():
     service = Service(driver_path)
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
+    def is_url_online(url):
+        """
+        Checks if the URL is reachable and returns True if the status is 200 OK.
+        """
+        try:
+            # Use 'requests.head' to only check the status of the URL without downloading the entire content
+            response = requests.head(url, allow_redirects=True, timeout=10)
+            return response.status_code == 200
+        except requests.RequestException:
+            return False
+
     def collect_website_info(url):
         try:
+            # Use Selenium to get the URL and process the page
             driver.get(url)
-
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'a')))
+
+            # Check if the redirected URL is valid
+            if not is_url_online(url):
+                print(f"Skipping {url} as it's no longer reachable.")
+                return None
 
             page_title = driver.title
             page_source = driver.page_source
@@ -47,22 +60,27 @@ def main():
             }
 
         except Exception as e:
+            print(f"Error processing {url}: {e}")
             return None
 
+    # Load the list of URLs
     df = pd.read_csv('./data/phishtank/verified_online.csv')
-    urls = df['url'].head(10000).tolist()
+    urls = df['url'].iloc[500:10000].tolist()
 
     collected_data = []
 
+    # Iterate over the URLs and collect information
     for url in tqdm(urls, desc="Processing URLs", ncols=100):
         info = collect_website_info(url)
         if info:
             collected_data.append(info)
 
+    # Save collected data to a CSV file
     if collected_data:
         collected_df = pd.DataFrame(collected_data)
         collected_df.to_csv('collected_website_info.csv', index=False)
 
+    # Close the Selenium WebDriver
     driver.quit()
 
 if __name__ == "__main__":
