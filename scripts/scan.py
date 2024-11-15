@@ -31,7 +31,7 @@ def main():
         try:
             driver.get(url)
 
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'a')))
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'div')))
 
             page_title = driver.title
             page_source = driver.page_source
@@ -47,10 +47,11 @@ def main():
             }
 
         except Exception as e:
+
             return None
 
     df = pd.read_csv('./data/phishtank/verified_online_2.csv')
-    urls = df['url'].head(10000).tolist()
+    urls = df['url'].iloc[5000:10000].tolist()
 
     collected_data = []
 
