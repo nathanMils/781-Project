@@ -12,10 +12,10 @@ def main():
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
 
-    extension_path = 'C:/Users/natei/Desktop/COS 781 Project/781-Project/local-chrome-extension'
+    extension_path = '/home/nathan/Desktop/781-Project/local-chrome-extension'
     chrome_options.add_argument(f'--load-extension={extension_path}')
 
-    driver_path = 'C:/development/chromedriver-win64/chromedriver.exe'
+    driver_path = '/home/nathan/Desktop/chromedriver-linux64/chromedriver'
 
     service = Service(driver_path)
     driver = webdriver.Chrome(service=service, options=chrome_options)
@@ -43,7 +43,7 @@ def main():
     
     df = pd.read_csv('./data/phishtank/verified_online.csv')
 
-    urls = df['url'].head(100).tolist()
+    urls = df['url'].head(1000).tolist()
 
     for url in urls:
         info = collect_website_info(url)
