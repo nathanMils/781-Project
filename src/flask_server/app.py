@@ -39,10 +39,13 @@ collected_data = []
 CSV_FILE_PATH = 'collected_data.csv'
 
 
-def initialize_csv():
+def write_to_csv(collected_data):
     try:
+        # Open the CSV file and append new data
         with open(CSV_FILE_PATH, mode='a', newline='') as file:
             writer = csv.writer(file)
+            
+            # If the file is empty, write headers
             if file.tell() == 0:
                 headers = [
                     "having_ip_address",
@@ -77,8 +80,12 @@ def initialize_csv():
                     "statistical_report"
                 ]
                 writer.writerow(headers)
+            
+            # Write the actual collected data (characteristics, not headers)
+            writer.writerow(collected_data)
     except Exception as e:
-        logger.error(f"Error initializing CSV file: {str(e)}")
+        logger.error(f"Error writing to CSV: {str(e)}")
+
 
 app = Flask(__name__)
 CORS(app)
@@ -95,23 +102,18 @@ def collect():
         characteristics, preprocess_time = time_run_check(is_phishing, url, html)
         logger.info(f"Data: {characteristics}, Processing time: {preprocess_time}")
 
+        if characteristics is None:
+            return jsonify({"error": "Unable to collect data for URL"}), 400
+        
+        # Write collected characteristics to CSV
+        write_to_csv(characteristics)
+
+        # Continue processing
         end_time = time.time()
         elapsed_time = end_time - start_time
         logger.info(f"Request processing time: {elapsed_time}")
 
-        is_phishing_result = 1
-        collected_data = characteristics
-
-        if collected_data is None:
-            return jsonify(
-                {
-                    "error": "Unable to collect data for URL"
-                }
-            ), 400
-        
-        with open(CSV_FILE_PATH, mode='a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(collected_data)
+        is_phishing_result = 1  # Assuming phishing result is 1
 
         return jsonify(
             {
@@ -120,12 +122,8 @@ def collect():
             }
         ), 200
     except Exception as e:
-        logger.error(f"Error: URL: {str(e)}")
-        return jsonify(
-            {
-                "error": "Unable to predict URL"
-            }
-        ), 400
+        logger.error(f"Error in /collect: {str(e)}")
+        return jsonify({"error": "Unable to predict URL"}), 400
 
 @app.route('/predict_url', methods=['POST'])
 def predict():
