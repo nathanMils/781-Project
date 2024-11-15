@@ -72,7 +72,7 @@ async def process_urls(driver, urls):
 
 def main():
     driver = configure_driver()
-    df = pd.read_csv('./data/phishtank/verified_online.csv')
+    df = pd.read_csv('./data/phishtank/verified_online_2.csv')
     urls = df['url'].iloc[5000:10000].tolist()
 
     # Run the async process to collect and post data
