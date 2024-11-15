@@ -918,6 +918,7 @@ def collect_data(url, html):
         return None
     
     data = {
+        "website_url": url,
         "having_ip_address": is_having_ip(url),
         "url_length": is_url_long(url),
         "shortining_service": is_shortening_service(url),
@@ -951,13 +952,13 @@ def collect_data(url, html):
     }
 
     for key, value in data.items():
+        if key == "website_url":
+            continue
         validated_value = validate_value(value)
         if validated_value is None:
             data = None
             break
         data[key] = validated_value
-
-    data["website_url"] = url
     
     return data
 
