@@ -80,9 +80,6 @@ def initialize_csv():
     except Exception as e:
         logger.error(f"Error initializing CSV file: {str(e)}")
 
-# Initialize the CSV file when the app starts
-initialize_csv()
-
 app = Flask(__name__)
 CORS(app)
 
