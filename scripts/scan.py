@@ -72,7 +72,7 @@ def main():
             return None
 
     df = pd.read_csv('./data/phishtank/verified_online_2.csv')
-    urls = df['url'].iloc[5000:10000].tolist()
+    urls = df['url'].iloc[1000:10000].tolist()
 
     collected_data = []
 
