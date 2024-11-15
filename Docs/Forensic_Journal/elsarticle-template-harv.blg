@@ -1,0 +1,52 @@
+This is BibTeX, Version 0.99d
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: elsarticle-template-harv.aux
+Reallocating 'name_of_file' (item size: 1) to 16 items.
+The style file: elsarticle-harv.bst
+Reallocating 'name_of_file' (item size: 1) to 10 items.
+Database file #1: myBibFile.bib
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Warning--empty journal in behnke2019nfv
+Warning--empty pages in farahmandian2016security
+You've used 29 entries,
+            2990 wiz_defined-function locations,
+            804 strings with 10817 characters,
+and the built_in function-call counts, 19152 in all, are:
+= -- 1498
+> -- 698
+< -- 26
++ -- 281
+- -- 240
+* -- 2000
+:= -- 2761
+add.period$ -- 81
+call.type$ -- 29
+change.case$ -- 226
+chr.to.int$ -- 29
+cite$ -- 31
+duplicate$ -- 1490
+empty$ -- 1425
+format.name$ -- 321
+if$ -- 3641
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 272
+newline$ -- 154
+num.names$ -- 116
+pop$ -- 528
+preamble$ -- 1
+purify$ -- 195
+quote$ -- 0
+skip$ -- 498
+stack$ -- 0
+substring$ -- 744
+swap$ -- 1043
+text.length$ -- 9
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 258
+warning$ -- 2
+while$ -- 132
+width$ -- 0
+write$ -- 421
+(There were 2 warnings)

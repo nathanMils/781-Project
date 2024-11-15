@@ -1,0 +1,250 @@
+\begin{thebibliography}{29}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\href}[2]{#2}
+\providecommand{\path}[1]{#1}
+\providecommand{\DOIprefix}{doi:}
+\providecommand{\ArXivprefix}{arXiv:}
+\providecommand{\URLprefix}{URL: }
+\providecommand{\Pubmedprefix}{pmid:}
+\providecommand{\doi}[1]{\href{http://dx.doi.org/#1}{\path{#1}}}
+\providecommand{\Pubmed}[1]{\href{pmid:#1}{\path{#1}}}
+\providecommand{\bibinfo}[2]{#2}
+\ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
+%Type = Book
+\bibitem[{{\AA}rnes(2017)}]{aarnes2017digital}
+\bibinfo{author}{{\AA}rnes, A.}, \bibinfo{year}{2017}.
+\newblock \bibinfo{title}{Digital forensics}.
+\newblock \bibinfo{publisher}{John Wiley \& Sons}.
+%Type = Article
+\bibitem[{Behnke et~al.(2019)Behnke, Müller, Bök, Schneider, Peuster, Karl,
+  Rocha, Mesquita and Bonnet}]{behnke2019nfv}
+\bibinfo{author}{Behnke, D.}, \bibinfo{author}{Müller, M.},
+  \bibinfo{author}{Bök, P.B.}, \bibinfo{author}{Schneider, S.},
+  \bibinfo{author}{Peuster, M.}, \bibinfo{author}{Karl, H.},
+  \bibinfo{author}{Rocha, A.}, \bibinfo{author}{Mesquita, M.},
+  \bibinfo{author}{Bonnet, J.}, \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{Nfv-driven intrusion detection for smart
+  manufacturing} , \bibinfo{pages}{1--6}.
+%Type = Inproceedings
+\bibitem[{Bia{\l}ecki et~al.(2012)Bia{\l}ecki, Muir, Ingersoll and
+  Imagination}]{bialecki2012apache}
+\bibinfo{author}{Bia{\l}ecki, A.}, \bibinfo{author}{Muir, R.},
+  \bibinfo{author}{Ingersoll, G.}, \bibinfo{author}{Imagination, L.},
+  \bibinfo{year}{2012}.
+\newblock \bibinfo{title}{Apache lucene 4}, in: \bibinfo{booktitle}{SIGIR 2012
+  workshop on open source information retrieval}, p.~\bibinfo{pages}{17}.
+%Type = Inproceedings
+\bibitem[{Boldyreva et~al.(2007)Boldyreva, Fischlin, Palacio and
+  Warinschi}]{boldyreva2007closer}
+\bibinfo{author}{Boldyreva, A.}, \bibinfo{author}{Fischlin, M.},
+  \bibinfo{author}{Palacio, A.}, \bibinfo{author}{Warinschi, B.},
+  \bibinfo{year}{2007}.
+\newblock \bibinfo{title}{A closer look at pki: Security and efficiency}, in:
+  \bibinfo{booktitle}{Public Key Cryptography--PKC 2007: 10th International
+  Conference on Practice and Theory in Public-Key Cryptography Beijing, China,
+  April 16-20, 2007. Proceedings 10}, \bibinfo{organization}{Springer}. pp.
+  \bibinfo{pages}{458--475}.
+%Type = Article
+\bibitem[{Cardoso et~al.(2020)Cardoso, Both, Prade, Macedo and
+  Lopes}]{cardoso2020softwarized}
+\bibinfo{author}{Cardoso, K.V.}, \bibinfo{author}{Both, C.B.},
+  \bibinfo{author}{Prade, L.R.}, \bibinfo{author}{Macedo, C.J.},
+  \bibinfo{author}{Lopes, V.H.L.}, \bibinfo{year}{2020}.
+\newblock \bibinfo{title}{A softwarized perspective of the 5g networks}.
+\newblock \bibinfo{journal}{arXiv preprint arXiv:2006.10409}
+  \href{http://arxiv.org/abs/2006.10409}{{\tt arXiv:2006.10409}}.
+%Type = Article
+\bibitem[{Condoluci and Mahmoodi(2018)}]{condoluci2018softwarization}
+\bibinfo{author}{Condoluci, M.}, \bibinfo{author}{Mahmoodi, T.},
+  \bibinfo{year}{2018}.
+\newblock \bibinfo{title}{Softwarization and virtualization in 5g mobile
+  networks: Benefits, trends and challenges}.
+\newblock \bibinfo{journal}{Computer Networks} \bibinfo{volume}{146},
+  \bibinfo{pages}{65--84}.
+%Type = Article
+\bibitem[{Dangi et~al.(2021)Dangi, Lalwani, Choudhary, You and
+  Pau}]{dangi2021study}
+\bibinfo{author}{Dangi, R.}, \bibinfo{author}{Lalwani, P.},
+  \bibinfo{author}{Choudhary, G.}, \bibinfo{author}{You, I.},
+  \bibinfo{author}{Pau, G.}, \bibinfo{year}{2021}.
+\newblock \bibinfo{title}{Study and investigation on 5g technology: A
+  systematic review}.
+\newblock \bibinfo{journal}{Sensors} \bibinfo{volume}{22}, \bibinfo{pages}{26}.
+%Type = Article
+\bibitem[{Elyas et~al.(2015)Elyas, Ahmad, Maynard and Lonie}]{elyas2015digital}
+\bibinfo{author}{Elyas, M.}, \bibinfo{author}{Ahmad, A.},
+  \bibinfo{author}{Maynard, S.B.}, \bibinfo{author}{Lonie, A.},
+  \bibinfo{year}{2015}.
+\newblock \bibinfo{title}{Digital forensic readiness: Expert perspectives on a
+  theoretical framework}.
+\newblock \bibinfo{journal}{Computers \& Security} \bibinfo{volume}{52},
+  \bibinfo{pages}{70--89}.
+%Type = Misc
+\bibitem[{ETSI(2023)}]{etsi2023}
+\bibinfo{author}{ETSI}, \bibinfo{year}{2023}.
+\newblock \bibinfo{title}{Nfv descriptors based on tosca specification}.
+\newblock \bibinfo{note}{Available at:
+  \url{https://www.etsi.org/deliver/etsi\_gs/NFV-SOL/001\_099/001/02.06.01\_60/gs\_NFV-SOL001v020601p.pdf}}.
+%Type = Inproceedings
+\bibitem[{Farahmandian and Hoang(2016)}]{farahmandian2016security}
+\bibinfo{author}{Farahmandian, S.}, \bibinfo{author}{Hoang, D.B.},
+  \bibinfo{year}{2016}.
+\newblock \bibinfo{title}{Security for software-defined (cloud, sdn and nfv)
+  infrastructures--issues and challenges}, in: \bibinfo{booktitle}{Eight
+  international conference on network and communications security}.
+%Type = Inproceedings
+\bibitem[{Hajlaoui et~al.(2020)Hajlaoui, Zaier, Khlifi, Ghodhbane, Ben~Hamed
+  and Sbita}]{hajlaoui20204g}
+\bibinfo{author}{Hajlaoui, E.}, \bibinfo{author}{Zaier, A.},
+  \bibinfo{author}{Khlifi, A.}, \bibinfo{author}{Ghodhbane, J.},
+  \bibinfo{author}{Ben~Hamed, M.}, \bibinfo{author}{Sbita, L.},
+  \bibinfo{year}{2020}.
+\newblock \bibinfo{title}{4g and 5g technologies: A comparative study}, in:
+  \bibinfo{booktitle}{2020 5th International Conference on Advanced
+  Technologies for Signal and Image Processing (ATSIP)},
+  \bibinfo{organization}{IEEE}. pp. \bibinfo{pages}{1--6}.
+%Type = Misc
+\bibitem[{{International Organization for Standardization}(2015)}]{iso27043}
+\bibinfo{author}{{International Organization for Standardization}},
+  \bibinfo{year}{2015}.
+\newblock \bibinfo{title}{Iso/iec 27043:2015 - information technology --
+  security techniques -- incident investigation principles and processes}.
+\newblock
+  \bibinfo{howpublished}{\url{https://www.iso.org/standard/44407.html}}.
+\newblock \bibinfo{note}{Accessed: 2024-10-06}.
+%Type = Article
+\bibitem[{Jeyaraman and Atallah(2006)}]{jeyaraman2006empirical}
+\bibinfo{author}{Jeyaraman, S.}, \bibinfo{author}{Atallah, M.J.},
+  \bibinfo{year}{2006}.
+\newblock \bibinfo{title}{An empirical study of automatic event reconstruction
+  systems}.
+\newblock \bibinfo{journal}{digital investigation} \bibinfo{volume}{3},
+  \bibinfo{pages}{108--115}.
+%Type = Article
+\bibitem[{Jover(2019)}]{jover2019current}
+\bibinfo{author}{Jover, R.P.}, \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{The current state of affairs in 5g security and the
+  main remaining security challenges}.
+\newblock \bibinfo{journal}{arXiv preprint}
+  \href{http://arxiv.org/abs/1904.08394}{{\tt arXiv:1904.08394}}.
+%Type = Article
+\bibitem[{Kebande and Venter(2018)}]{kebande2018digital}
+\bibinfo{author}{Kebande, V.R.}, \bibinfo{author}{Venter, H.S.},
+  \bibinfo{year}{2018}.
+\newblock \bibinfo{title}{On digital forensic readiness in the cloud using a
+  distributed agent-based solution: issues and challenges}.
+\newblock \bibinfo{journal}{Australian Journal of Forensic Sciences}
+  \bibinfo{volume}{50}, \bibinfo{pages}{209--238}.
+%Type = Article
+\bibitem[{Kumar(2006)}]{kumar2006ping}
+\bibinfo{author}{Kumar, S.}, \bibinfo{year}{2006}.
+\newblock \bibinfo{title}{Ping attack--how bad is it?}
+\newblock \bibinfo{journal}{Computers Security} \bibinfo{volume}{25},
+  \bibinfo{pages}{332--337}.
+%Type = Inproceedings
+\bibitem[{Makura and Venter(2024)}]{makura2024towards}
+\bibinfo{author}{Makura, S.}, \bibinfo{author}{Venter, H.},
+  \bibinfo{year}{2024}.
+\newblock \bibinfo{title}{Towards the development of a digital forensic
+  readiness model for 5g nfv environments}, in: \bibinfo{booktitle}{2024
+  IST-Africa Conference (IST-Africa)}, \bibinfo{organization}{IEEE}. pp.
+  \bibinfo{pages}{1--12}.
+%Type = Inproceedings
+\bibitem[{Makura et~al.(2020)Makura, Venter, Ikuesan, Kebande and
+  Karie}]{9089494}
+\bibinfo{author}{Makura, S.M.}, \bibinfo{author}{Venter, H.S.},
+  \bibinfo{author}{Ikuesan, R.A.}, \bibinfo{author}{Kebande, V.R.},
+  \bibinfo{author}{Karie, N.M.}, \bibinfo{year}{2020}.
+\newblock \bibinfo{title}{Proactive forensics: Keystroke logging from the cloud
+  as potential digital evidence for forensic readiness purposes}, in:
+  \bibinfo{booktitle}{2020 IEEE International Conference on Informatics, IoT,
+  and Enabling Technologies (ICIoT)}, pp. \bibinfo{pages}{200--205}.
+\newblock \DOIprefix\doi{10.1109/ICIoT48696.2020.9089494}.
+%Type = Article
+\bibitem[{Regulation(2016)}]{regulation2016regulation}
+\bibinfo{author}{Regulation, P.}, \bibinfo{year}{2016}.
+\newblock \bibinfo{title}{Regulation (eu) 2016/679 of the european parliament
+  and of the council}.
+\newblock \bibinfo{journal}{Regulation (eu)} \bibinfo{volume}{679},
+  \bibinfo{pages}{2016}.
+%Type = Article
+\bibitem[{Scarfone et~al.(2007)Scarfone, Mell et~al.}]{scarfone2007guide}
+\bibinfo{author}{Scarfone, K.}, \bibinfo{author}{Mell, P.}, et~al.,
+  \bibinfo{year}{2007}.
+\newblock \bibinfo{title}{Guide to intrusion detection and prevention systems
+  (idps)}.
+\newblock \bibinfo{journal}{NIST special publication} \bibinfo{volume}{800},
+  \bibinfo{pages}{94}.
+%Type = Inproceedings
+\bibitem[{Shaik et~al.(2019)Shaik, Borgaonkar, Park and
+  Seifert}]{10.1145/3317549.3319728}
+\bibinfo{author}{Shaik, A.}, \bibinfo{author}{Borgaonkar, R.},
+  \bibinfo{author}{Park, S.}, \bibinfo{author}{Seifert, J.P.},
+  \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{New vulnerabilities in 4g and 5g cellular access
+  network protocols: exposing device capabilities}, in:
+  \bibinfo{booktitle}{Proceedings of the 12th Conference on Security and
+  Privacy in Wireless and Mobile Networks}, \bibinfo{publisher}{Association for
+  Computing Machinery}. pp. \bibinfo{pages}{221--231}.
+\newblock \URLprefix \url{https://doi.org/10.1145/3317549.3319728},
+  \DOIprefix\doi{10.1145/3317549.3319728}.
+%Type = Article
+\bibitem[{Sharevski(2018)}]{sharevski2018towards}
+\bibinfo{author}{Sharevski, F.}, \bibinfo{year}{2018}.
+\newblock \bibinfo{title}{Towards 5g cellular network forensics}.
+\newblock \bibinfo{journal}{EURASIP Journal on Information Security}
+  \bibinfo{volume}{2018}, \bibinfo{pages}{1--16}.
+%Type = Inproceedings
+\bibitem[{Smith and Doe(2023)}]{smith2023example}
+\bibinfo{author}{Smith, J.}, \bibinfo{author}{Doe, J.}, \bibinfo{year}{2023}.
+\newblock \bibinfo{title}{An example of conference paper citation in bibtex},
+  in: \bibinfo{booktitle}{Proceedings of the International Conference on Sample
+  Topics}, \bibinfo{organization}{IEEE}. \bibinfo{publisher}{IEEE Press},
+  \bibinfo{address}{New York, NY}. pp. \bibinfo{pages}{123--130}.
+\newblock \DOIprefix\doi{10.1109/ICST.2023.00001}.
+%Type = Misc
+\bibitem[{of~South~Africa(2019)}]{POPIA2019}
+\bibinfo{author}{of~South~Africa, R.}, \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{Protection of personal information act 2019}.
+\newblock \bibinfo{howpublished}{Government Printer}.
+\newblock \bibinfo{note}{Available at:
+  \url{https://popia.co.za/section-14-retention-and-restriction-of-records/}}.
+%Type = Article
+\bibitem[{Tan(2001)}]{tan2001forensic}
+\bibinfo{author}{Tan, J.}, \bibinfo{year}{2001}.
+\newblock \bibinfo{title}{Forensic readiness}.
+\newblock \bibinfo{journal}{Cambridge, MA: Stake} \bibinfo{volume}{1}.
+%Type = Article
+\bibitem[{Thorogood and Brookson(2007)}]{thorogood2007lawful}
+\bibinfo{author}{Thorogood, R.}, \bibinfo{author}{Brookson, C.},
+  \bibinfo{year}{2007}.
+\newblock \bibinfo{title}{Lawful interception}.
+\newblock \bibinfo{journal}{TELEKTRONIKK} \bibinfo{volume}{103},
+  \bibinfo{pages}{33}.
+%Type = Inproceedings
+\bibitem[{Valjarevi{\'c} et~al.(2016)Valjarevi{\'c}, Venter and
+  Petrovi{\'c}}]{valjarevic2016iso}
+\bibinfo{author}{Valjarevi{\'c}, A.}, \bibinfo{author}{Venter, H.},
+  \bibinfo{author}{Petrovi{\'c}, R.}, \bibinfo{year}{2016}.
+\newblock \bibinfo{title}{Iso/iec 27043: 2015—role and application}, in:
+  \bibinfo{booktitle}{2016 24th Telecommunications Forum (TELFOR)},
+  \bibinfo{organization}{IEEE}. pp. \bibinfo{pages}{1--4}.
+%Type = Inproceedings
+\bibitem[{Wilkens et~al.(2022)Wilkens, Haas, Amann and
+  Fischer}]{wilkens2022passive}
+\bibinfo{author}{Wilkens, F.}, \bibinfo{author}{Haas, S.},
+  \bibinfo{author}{Amann, J.}, \bibinfo{author}{Fischer, M.},
+  \bibinfo{year}{2022}.
+\newblock \bibinfo{title}{Passive, transparent, and selective tls decryption
+  for network security monitoring}, in: \bibinfo{booktitle}{IFIP International
+  Conference on ICT Systems Security and Privacy Protection},
+  \bibinfo{organization}{Springer}. pp. \bibinfo{pages}{87--105}.
+%Type = Article
+\bibitem[{Zhang(2019)}]{zhang2019overview}
+\bibinfo{author}{Zhang, S.}, \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{An overview of network slicing for 5g}.
+\newblock \bibinfo{journal}{IEEE Wireless Communications} \bibinfo{volume}{26},
+  \bibinfo{pages}{111--117}.
+
+\end{thebibliography}
