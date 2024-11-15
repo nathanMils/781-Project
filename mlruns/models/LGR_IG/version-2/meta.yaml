@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1731653820447
+current_stage: None
+description: ''
+last_updated_timestamp: 1731653820447
+name: LGR_IG
+run_id: 2a46ec20601c42cf918acf60917f0a60
+run_link: ''
+source: file:///home/nathan/Desktop/781-Project/configs/models/2a46ec20601c42cf918acf60917f0a60/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///home/nathan/Desktop/781-Project/configs/models/2a46ec20601c42cf918acf60917f0a60/artifacts/model
+user_id: null
+version: 2

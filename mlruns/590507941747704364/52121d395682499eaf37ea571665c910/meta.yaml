@@ -1,0 +1,15 @@
+artifact_uri: file:///C:\Users\natei\Desktop\COS 781 Project\781-Project\configs\models/52121d395682499eaf37ea571665c910/artifacts
+end_time: 1731653964670
+entry_point_name: ''
+experiment_id: '590507941747704364'
+lifecycle_stage: active
+run_id: 52121d395682499eaf37ea571665c910
+run_name: KFC_30_XGB
+run_uuid: 52121d395682499eaf37ea571665c910
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1731653960686
+status: 3
+tags: []
+user_id: natei

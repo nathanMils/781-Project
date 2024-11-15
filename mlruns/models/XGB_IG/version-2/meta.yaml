@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1731654237762
+current_stage: None
+description: ''
+last_updated_timestamp: 1731654237762
+name: XGB_IG
+run_id: 52121d395682499eaf37ea571665c910
+run_link: ''
+source: file:///home/nathan/Desktop/781-Project/configs/models/52121d395682499eaf37ea571665c910/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///home/nathan/Desktop/781-Project/configs/models/52121d395682499eaf37ea571665c910/artifacts/model
+user_id: null
+version: 2

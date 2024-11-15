@@ -979,7 +979,12 @@ def is_phishing_information_gain(url, html):
         "having_ip_address": is_having_ip(url),
         "statistical_report": is_statistical_report(url, domain),
         "links_pointing_to_page": is_links_pointing_to_page(url, soup),
-        "dnsrecord": is_dns_record(domain)
+        "dnsrecord": is_dns_record(domain),
+        "url_length": is_url_long(url),
+        "shortining_service": is_shortening_service(url),
+        "abnormal_url": is_abnormal_url(url),
+        "having_at_symbol": is_having_at_symbol(url),
+        "on_mouseover": is_on_mouseover(soup)
     }
 
 
@@ -1021,16 +1026,7 @@ def is_phishing_composite(url, html):
         "https_token": is_https_token(url),
         "on_mouseover": is_on_mouseover(soup),
         "double_slash_redirecting": is_double(url),
-        "port": is_port(url),
-        "redirect": is_redirect(response),
-        "favicon": is_favicon(url, soup),
-        "iframe": is_iframe(soup),
-        "submitting_to_email": is_submitting_to_email_direct(html, soup),
-        "rightclick": is_rightclick(soup),
-        "popupwindow": is_popupwindow(soup),
-        "web_traffic": is_web_traffic(url),
-        "google_index": is_google_index(url),
-        "page_rank": is_page_rank(url)
+        "port": is_port(url)
     }
 
 
