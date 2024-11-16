@@ -50,29 +50,16 @@ def main():
             }
 
         except TimeoutException:
-            # Handle timeout exception and send data to the API anyway
-            print(f"Timeout occurred while loading the page: {url}")
-            # Collect data even on timeout
-            page_title = driver.title
-            page_source = driver.page_source
-
-            response = requests.post('http://127.0.0.1:5000/collect', json={'url': url, 'html': page_source})
-            if response.status_code != 200:
-                print(f"Error in collecting data for URL: {url}")
-
-            return {
-                'url': url,
-                'title': page_title,
-                'html': page_source
-            }
+            return None
 
         except Exception as e:
             # Handle other exceptions
             print(f"An error occurred: {e}")
             return None
 
-    df = pd.read_csv('./data/phishtank/open_phish_2.csv')
+    df = pd.read_csv('./common_crawl/extracted_urlscsv')
     urls = df['url'].tolist()
+    urls = df['url'].sample(n=2500, random_state=42).tolist()
 
     collected_data = []
 
