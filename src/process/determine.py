@@ -62,17 +62,17 @@ url_shortening_services = [
     "tinyurl.com", "bit.ly", "t.co", "goo.gl", "is.gd", "buff.ly",
     "adf.ly", "ow.ly", "bit.do", "cutt.ly", "shorte.st", "clck.ru",
     "tiny.cc", "tr.im", "x.co", "soo.gd", "s2r.co", "bl.ink", "mcaf.ee",
-    "urlz.fr"
+    "urlz.fr", "shorturl.at"
 ]
 def is_shortening_service(url):
     """Determines if the URL uses a URL shortening service."""
     parsed_url = urlparse(url)
     domain = parsed_url.netloc.lower()
 
-    if domain in url_shortening_services:
-        return -1
-    else:
-        return 1
+    for service in url_shortening_services:
+        if service in domain:
+            return -1
+    return 1
 
 ## RULE: URL's having "@" Symbol
 ## STATUS: FINISHED

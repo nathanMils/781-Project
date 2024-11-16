@@ -14,6 +14,8 @@ with gzip.open(warc_file, 'rb') as warc, open(csv_file, mode='w', newline='', en
         if record.rec_type == 'metadata':
             target_uri = record.rec_headers.get_header('WARC-Target-URI')
             if target_uri:
+                if "http://" in target_uri:
+                    continue
                 csv_writer.writerow([target_uri])
 
 print(f"URLs have been successfully extracted and saved to {csv_file}.")
