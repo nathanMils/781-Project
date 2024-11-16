@@ -165,3 +165,8 @@ cython_debug/
 .vscode/
 
 Docs/Final_Report/sigkddExp.pdf 
+common_crawl/cc_index_data/*
+common_crawl/wet_paths/*
+common_crawl/wet_data/*
+common_crawl/wat_paths/*
+common_crawl/wat_data/*

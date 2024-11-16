@@ -61,7 +61,8 @@ def is_url_long(url):
 url_shortening_services = [
     "tinyurl.com", "bit.ly", "t.co", "goo.gl", "is.gd", "buff.ly",
     "adf.ly", "ow.ly", "bit.do", "cutt.ly", "shorte.st", "clck.ru",
-    "tiny.cc", "tr.im", "x.co", "soo.gd", "s2r.co", "bl.ink", "mcaf.ee"
+    "tiny.cc", "tr.im", "x.co", "soo.gd", "s2r.co", "bl.ink", "mcaf.ee",
+    "urlz.fr"
 ]
 def is_shortening_service(url):
     """Determines if the URL uses a URL shortening service."""
@@ -696,8 +697,16 @@ def is_links_pointing_to_page(url, soup):
 ## STATUS: FINISHED
 ## List of top phishing domains and IPs
 top_phishing_domains = [
-    ".uno", ".sbs", ".best", ".beauty", ".top", ".hair", ".monster", ".cyou", ".wiki", ".makeup"
+    # Cheap and Open TLDs
+    ".xyz", ".top", ".club", ".online", ".shop", ".site", ".vip", ".buzz",
+
+    # Freenom TLDs (Free Domains)
+    ".tk", ".ml", ".ga", ".cf", ".gq",
+
+    # Geographic and Niche TLDs less commonly used for legitimate purposes
+    ".ly", ".to", ".ru", ".cn", ".su"
 ]
+
 
 
 top_phishing_ips = [
