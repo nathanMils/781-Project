@@ -57,7 +57,7 @@ def main():
             print(f"An error occurred: {e}")
             return None
 
-    df = pd.read_csv('./common_crawl/extracted_urlscsv')
+    df = pd.read_csv('./common_crawl/extracted_urls.csv')
     urls = df['url'].tolist()
     urls = df['url'].sample(n=3000, random_state=42).tolist()
 
