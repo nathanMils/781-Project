@@ -59,7 +59,7 @@ def main():
 
     df = pd.read_csv('./common_crawl/extracted_urlscsv')
     urls = df['url'].tolist()
-    urls = df['url'].sample(n=2500, random_state=42).tolist()
+    urls = df['url'].sample(n=3000, random_state=42).tolist()
 
     collected_data = []
 
