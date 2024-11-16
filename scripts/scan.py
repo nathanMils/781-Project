@@ -71,7 +71,7 @@ def main():
             print(f"An error occurred: {e}")
             return None
 
-    df = pd.read_csv('./data/phishtank/open_phish.csv')
+    df = pd.read_csv('./data/phishtank/open_phish_2.csv')
     urls = df['url'].tolist()
 
     collected_data = []
