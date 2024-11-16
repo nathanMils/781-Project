@@ -778,8 +778,7 @@ def parse_html_direct(html):
 def get_whois(url):
     """Gets the WHOIS information of a URL."""
     try:
-        domain_url = urlparse(url).netloc
-        domain = whois.whois(domain_url)
+        domain = whois.whois(url)
         return domain
     except Exception:
         return False
