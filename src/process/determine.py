@@ -751,7 +751,7 @@ top_phishing_tlds = [
     ".ly", ".to", ".ru", ".cn", ".su"
 ]
 
-def is_statistical_report(ur):
+def is_statistical_report(url):
     """Determines if the URL has a suspicious statistical report based on phishing domains or IPs."""
     ext = tldextract.extract(url)
     
