@@ -39,6 +39,7 @@ def main():
             page_source = driver.page_source
 
             # Send collected data to the Flask API
+            print("send")
             response = requests.post('http://127.0.0.1:5000/collect', json={'url': url, 'html': page_source})
             if response.status_code != 200:
                 print(f"Error in collecting data for URL: {url}")
