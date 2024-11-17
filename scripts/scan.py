@@ -9,6 +9,7 @@ import time
 import pandas as pd
 from tqdm import tqdm
 import requests
+import random
 
 def main():
     chrome_options = Options()
@@ -58,8 +59,10 @@ def main():
             print(f"An error occurred: {e}")
             return None
 
-    df = pd.read_csv('./data/phishtank/open_phish_3.csv')
+    df = pd.read_csv('./common_crawl/extracted_urls.csv')
     urls = df['url'].tolist()
+    # Extract a random sample of 2500 URLs
+    urls = random.sample(urls, min(len(urls), 2500))
 
     collected_data = []
 
