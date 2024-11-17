@@ -10,14 +10,30 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import os
 import json
-
+import tldextract
 import logging
 import time
+import dns.resolver
 
 logger = logging.getLogger('process.determine')
 
 
 ## ADDRESS BAR BASED FEATURES #########################################################
+
+def core_domain(url):
+    """Normalize the URL by extracting only the core domain using tldextract."""
+    extracted = tldextract.extract(url)
+    core_domain = f"{extracted.domain}.{extracted.suffix}"
+    return core_domain
+
+def domain_name(url):
+    """Normalize the URL by extracting only the domain name using tldextract."""
+    extracted = tldextract.extract(url)
+    return extracted.domain
+
+def lower_case(url):
+    """Normalize the URL by converting it to lowercase."""
+    return url.lower()
 
 ## RULE: Using the IP Address
 ## STATUS: FINISHED
@@ -43,17 +59,19 @@ def is_having_ip(url):
 ## RULE: Long URL to Hide the Suspicious Part
 ## STATUS: FINISHED
 def is_url_long(url):
-    """Determines if the URL length is suspicious."""
-    try:
-        url_length = len(url)
-        if url_length >= 54:
-            logger.debug(f"URL: {url} is suspiciously long with length {url_length}.")
-            return -1
-        logger.debug(f"URL: {url} is not suspiciously long with length {url_length}.")
-        return 1
-    except Exception:
-        logger.error(f"Error occurred while determining if the URL: {url} is suspiciously long.")
-        return 1
+    """Determines if the URL length is suspicious or phishing based on length."""
+    url_length = len(url)
+    
+    if url_length < 54:
+        logger.debug(f"URL: {url} is legitimate with length {url_length}.")
+        return 1  # Legitimate
+    elif 54 <= url_length <= 75:
+        logger.debug(f"URL: {url} is suspicious with length {url_length}.")
+        return 0  # Suspicious
+    else:
+        logger.debug(f"URL: {url} is phishing with length {url_length}.")
+        return -1  # Phishing
+            
     
 ## RULE: Using URL Shortening Services "TinyURL"
 ## STATUS: FINISHED
@@ -66,12 +84,9 @@ url_shortening_services = [
 ]
 def is_shortening_service(url):
     """Determines if the URL uses a URL shortening service."""
-    parsed_url = urlparse(url)
-    domain = parsed_url.netloc.lower()
-
-    for service in url_shortening_services:
-        if service in domain:
-            return -1
+    core = core_domain(url)
+    if core in url_shortening_services:
+        return -1
     return 1
 
 ## RULE: URL's having "@" Symbol
@@ -116,26 +131,18 @@ def is_prefix_suffix(url):
 
 ## RULE: Sub Domain and Multi Sub Domains
 ## STATUS: FINISHED
-## List Common Top Level Domains
-common_tlds = [
-    'com', 'net', 'org', 'uk', 'edu', 'gov', 'info', 'biz', 'co', 'us', 'ca', 
-    'de', 'za', 'fr', 'au', 'ru', 'ch', 'it', 'nl', 'se', 'no', 'es', 'mil', 
-    'int', 'eu', 'cn', 'in', 'br', 'za', 'mx', 'kr', 'hk', 'sg', 'tv', 'me'
-]
 def is_having_sub_domain(url):
-    """Determines if the URL has multiple subdomains."""
-    parsed_url = urlparse(url)
-    domain = parsed_url.netloc or parsed_url.path.split('/')[0]
-    domain = domain.lstrip('www.')
-    domain_parts = domain.split('.')
-    if domain_parts[-1] in common_tlds:
-        domain_parts = domain_parts[:-1]
-    num_dots = len(domain_parts) - 1
-
-    if num_dots == 1:
-        return 0
-    elif num_dots == 0:
-        return 1
+    """Classifies a URL based on the number of subdomains."""
+    ext = tldextract.extract(url)
+    subdomain = ext.subdomain
+    num_subdomains = len(subdomain.split('.')) if subdomain else 0
+    
+    if num_subdomains == 0:
+        return 1  # Legitimate
+    elif num_subdomains == 1:
+        return 1  # Legitimate
+    elif num_subdomains == 2:
+        return 0  # Suspicious
     else:
         return -1
 
@@ -444,14 +451,20 @@ def is_submitting_to_email_direct(html, soup):
 
 ## RULE: Abnormal URL
 ## STATUS: FINISHED
-def is_abnormal_url(url):
+def is_abnormal_url(url, w):
     """Determines if the URL is abnormal."""
-    parsed_url = urlparse(url)
-    host_name = parsed_url.netloc
-    if not host_name:
-        return -1
-    if "." in host_name and len(host_name.split('.')) > 1:
-        return 1
+    ext = tldextract.extract(url)
+    host_name = ext.domain + '.' + ext.suffix
+    if w and 'domain_name' in w:
+        domain_names = w['domain_name']
+        logger.info(f"Domain names: {domain_names}")
+        if isinstance(domain_names, list):
+            for domain in domain_names:
+                if host_name.lower() == domain.lower():
+                    return 1
+        elif isinstance(domain_names, str):
+            if host_name.lower() == domain_names.lower():
+                return 1
     return -1
 
 
@@ -540,13 +553,44 @@ def is_age_of_domain(domain):
 
 ## RULE: DNS Record
 ## STATUS: FINISHED
-def is_dns_record(domain):
-    """Determines if the URL has a DNS record."""
-    if domain.domain_name:
-        # If the domain has information, we assume it's legitimate
-        return 1
-    else:
+def is_dns_record(url, timeout=5):
+    """Check if the domain or subdomain has DNS records."""
+    ext = tldextract.extract(url)
+    domain = f"{ext.domain}.{ext.suffix}"
+    
+    resolver = dns.resolver.Resolver()
+    resolver.timeout = timeout
+    resolver.lifetime = timeout  # Set a timeout for the entire resolution process
+    
+    try:
+        a_records = resolver.resolve(domain, 'A')
+        if a_records:
+            return 1
+    except dns.resolver.NoAnswer:
+        pass
+    except dns.resolver.NXDOMAIN:
         return -1
+    except dns.exception.Timeout:
+        return -1
+    except dns.resolver.NoNameservers:
+        return -1
+    
+    try:
+        aaaa_records = resolver.resolve(domain, 'AAAA')
+        if aaaa_records:
+            return 1
+    except dns.resolver.NoAnswer:
+        pass
+    except dns.resolver.NXDOMAIN:
+        return -1
+    except dns.exception.Timeout:
+        return -1
+    except dns.resolver.NoNameservers:
+        return -1
+    
+    return -1
+    
+
 
 
 api_key = os.getenv('DIGITAL_RANK_API_KEY')
@@ -696,7 +740,7 @@ def is_links_pointing_to_page(url, soup):
 ## RULE: Statistical Reports
 ## STATUS: FINISHED
 ## List of top phishing domains and IPs
-top_phishing_domains = [
+top_phishing_tlds = [
     # Cheap and Open TLDs
     ".xyz", ".top", ".club", ".online", ".shop", ".site", ".vip", ".buzz",
 
@@ -707,37 +751,14 @@ top_phishing_domains = [
     ".ly", ".to", ".ru", ".cn", ".su"
 ]
 
-
-
-top_phishing_ips = [
-    "156.146.62.218", "212.102.57.68", "138.199.18.156", "199.167.138.22", 
-    "178.159.37.4", "178.159.37.17", "185.190.42.200", "178.159.37.34", 
-    "89.234.157.254", "190.2.131.167", "185.236.200.42", "62.122.184.194", 
-    "196.196.53.142", "178.159.37.11", "195.176.3.23", "94.230.208.147", 
-    "35.0.127.52", "93.157.254.39", "178.159.37.55", "31.173.87.149",
-    "118.107.16.194", "45.43.63.15", "122.230.47.69", "185.228.234.120", 
-    "185.247.118.151", "107.172.143.65", "194.37.82.149", "103.240.252.87", 
-    "77.222.46.175", "131.108.17.87", "93.190.10.18", "103.18.103.50", 
-    "103.18.103.5", "165.154.184.8", "193.233.237.13", "212.230.134.27", 
-    "192.92.97.185", "190.247.243.99", "216.117.133.168", "123.190.180.241", 
-    "103.102.177.230", "57.128.225.168", "181.229.154.222", "209.85.214.193", 
-    "103.25.90.29"
-]
-
-
-def is_statistical_report(url, domain_info):
+def is_statistical_report(ur):
     """Determines if the URL has a suspicious statistical report based on phishing domains or IPs."""
-    domain = urlparse(url).netloc
-
-    for phishing_domain in top_phishing_domains:
-        if phishing_domain.lower() in domain.lower():
-            return -1
-
-    ip_address = domain_info.get('ips', [])
-    if ip_address and ip_address[0] in top_phishing_ips:
-        return -1
-
-    return 1
+    ext = tldextract.extract(url)
+    
+    if ext.suffix in top_phishing_tlds:
+        return -1  # Phishing
+    
+    return 1 
 
 
 ########################################################################################
@@ -820,19 +841,19 @@ def is_phishing_no_html(url):
         "links_in_tags": is_links_in_tags(url, soup),
         "sfh": is_sfh(url, soup),
         "submitting_to_email": is_submitting_to_email(response, soup),
-        "abnormal_url": is_abnormal_url(url),
+        "abnormal_url": is_abnormal_url(url, domain),
         "redirect": is_redirect(response),
         "on_mouseover": is_on_mouseover(soup),
         "rightclick": is_rightclick(soup),
         "popupwindow": is_popupwindow(soup),
         "iframe": is_iframe(soup),
         "age_of_domain": is_age_of_domain(domain),
-        "dnsrecord": is_dns_record(domain),
+        "dnsrecord": is_dns_record(url),
         "web_traffic": is_web_traffic(url),
         "page_rank": is_page_rank(url),
         "google_index": is_google_index(url),
         "links_pointing_to_page": is_links_pointing_to_page(url, soup),
-        "statistical_report": is_statistical_report(url, domain)
+        "statistical_report": is_statistical_report(url)
     }
     
     return data
@@ -893,12 +914,12 @@ def is_phishing_no_html_time(url):
     data["popupwindow"], timing_data["popupwindow"] = time_feature_check(is_popupwindow, soup)
     data["iframe"], timing_data["iframe"] = time_feature_check(is_iframe, soup)
     data["age_of_domain"], timing_data["age_of_domain"] = time_feature_check(is_age_of_domain, domain)
-    data["dnsrecord"], timing_data["dnsrecord"] = time_feature_check(is_dns_record, domain)
+    data["dnsrecord"], timing_data["dnsrecord"] = time_feature_check(is_dns_record, url)
     data["web_traffic"], timing_data["web_traffic"] = time_feature_check(is_web_traffic, url)
     data["page_rank"], timing_data["page_rank"] = time_feature_check(is_page_rank, url)
     data["google_index"], timing_data["google_index"] = time_feature_check(is_google_index, url)
     data["links_pointing_to_page"], timing_data["links_pointing_to_page"] = time_feature_check(is_links_pointing_to_page, url, soup)
-    data["statistical_report"], timing_data["statistical_report"] = time_feature_check(is_statistical_report, url, domain)
+    data["statistical_report"], timing_data["statistical_report"] = time_feature_check(is_statistical_report, url)
     
     return data, timing_data
 
@@ -945,19 +966,19 @@ def collect_data(url, html):
         "links_in_tags": is_links_in_tags(url, soup),
         "sfh": is_sfh(url, soup),
         "submitting_to_email": is_submitting_to_email_direct(html, soup),
-        "abnormal_url": is_abnormal_url(url),
+        "abnormal_url": is_abnormal_url(url, domain),
         "redirect": is_redirect(response),
         "on_mouseover": is_on_mouseover(soup),
         "rightclick": is_rightclick(soup),
         "popupwindow": is_popupwindow(soup),
         "iframe": is_iframe(soup),
         "age_of_domain": is_age_of_domain(domain),
-        "dnsrecord": is_dns_record(domain),
+        "dnsrecord": is_dns_record(url),
         "web_traffic": is_web_traffic(url),
         "page_rank": is_page_rank(url),
         "google_index": is_google_index(url),
         "links_pointing_to_page": is_links_pointing_to_page(url, soup),
-        "statistical_report": is_statistical_report(url, domain),
+        "statistical_report": is_statistical_report(url),
         "result": 1
     }
 
@@ -1007,19 +1028,19 @@ def is_phishing(url, html):
         "links_in_tags": is_links_in_tags(url, soup),
         "sfh": is_sfh(url, soup),
         "submitting_to_email": is_submitting_to_email_direct(html, soup),
-        "abnormal_url": is_abnormal_url(url),
+        "abnormal_url": is_abnormal_url(url, domain),
         "redirect": is_redirect(response),
         "on_mouseover": is_on_mouseover(soup),
         "rightclick": is_rightclick(soup),
         "popupwindow": is_popupwindow(soup),
         "iframe": is_iframe(soup),
         "age_of_domain": is_age_of_domain(domain),
-        "dnsrecord": is_dns_record(domain),
+        "dnsrecord": is_dns_record(url),
         "web_traffic": is_web_traffic(url),
         "page_rank": is_page_rank(url),
         "google_index": is_google_index(url),
         "links_pointing_to_page": is_links_pointing_to_page(url, soup),
-        "statistical_report": is_statistical_report(url, domain)
+        "statistical_report": is_statistical_report(url)
     }
     
     return data
@@ -1053,9 +1074,9 @@ def is_phishing_information_gain(url, html):
         "age_of_domain": is_age_of_domain(domain),
         "page_rank": is_page_rank(url),
         "links_pointing_to_page": is_links_pointing_to_page(url, soup),
-        "dnsrecord": is_dns_record(domain),
+        "dnsrecord": is_dns_record(url),
         "shortining_service": is_shortening_service(url),
-        "abnormal_url": is_abnormal_url(url),
+        "abnormal_url": is_abnormal_url(url, domain),
         "on_mouseover": is_on_mouseover(soup),
         "double_slash_redirecting": is_double(url),
         "redirect": is_redirect(response),
@@ -1091,11 +1112,11 @@ def is_phishing_composite(url, html):
         "sfh": is_sfh(url, soup),
         "domain_registration_length": is_domain_registration_length(domain),
         "age_of_domain": is_age_of_domain(domain),
-        "statistical_report": is_statistical_report(url, domain),
-        "dnsrecord": is_dns_record(domain),
+        "statistical_report": is_statistical_report(url),
+        "dnsrecord": is_dns_record(url),
         "links_pointing_to_page": is_links_pointing_to_page(url, soup),
         "shortining_service": is_shortening_service(url),
-        "abnormal_url": is_abnormal_url(url),
+        "abnormal_url": is_abnormal_url(url, domain),
         "having_at_symbol": is_having_at_symbol(url),
         "on_mouseover": is_on_mouseover(soup),
         "double_slash_redirecting": is_double(url),

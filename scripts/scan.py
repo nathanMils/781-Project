@@ -57,9 +57,8 @@ def main():
             print(f"An error occurred: {e}")
             return None
 
-    df = pd.read_csv('./common_crawl/extracted_urls.csv')
+    df = pd.read_csv('./data/phishtank/open_phish_3.csv')
     urls = df['url'].tolist()
-    urls = df['url'].sample(n=3000, random_state=42).tolist()
 
     collected_data = []
 
