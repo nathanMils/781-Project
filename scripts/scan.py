@@ -33,7 +33,7 @@ def main():
             driver.get(url)
 
             # Wait for the page to load or timeout after 10 seconds
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'a')))
 
             page_title = driver.title
             page_source = driver.page_source
