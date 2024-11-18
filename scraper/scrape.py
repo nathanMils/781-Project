@@ -18,7 +18,7 @@ import coloredlogs
 import uuid
 from dotenv import load_dotenv
 
-from .rules import collect_data
+from scraper.rules import collect_data
 
 # Parallelism
 data_queue = queue.Queue()
