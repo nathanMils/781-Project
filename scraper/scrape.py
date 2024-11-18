@@ -54,7 +54,7 @@ def setup_driver():
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--no-sandbox')
-    driver = webdriver.Chrome(service=Service('/path/to/chromedriver'), options=options)
+    driver = webdriver.Chrome(service=Service(get_chromedriver_path()), options=options)
     return driver
 
 def scraper(csv_path, start, end):
