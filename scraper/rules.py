@@ -14,6 +14,9 @@ import tldextract
 import logging
 import time
 import dns.resolver
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path='./.env')
 
 
 
