@@ -29,6 +29,7 @@ def setup_logging():
 
 def get_chromedriver_path():
     chromedriver_path = os.getenv('CHROMEDRIVER_PATH')
+    print(chromedriver_path)
     if chromedriver_path is None:
         raise ValueError("Environment variable 'CHROMEDRIVER_PATH' is not set.")
     return chromedriver_path
