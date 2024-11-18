@@ -65,7 +65,7 @@ def scraper(csv_path, start, end):
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--no-sandbox')
     driver = webdriver.Chrome(service=Service(get_chromedriver_path()), options=chrome_options)
-    urls = pd.read_csv(csv_path)['url'][start:end].tolist()
+    urls = pd.read_csv(csv_path)['website_url'][start:end].tolist()
     
     for url in urls:
         logging.info(f"Checking if URL {url} is reachable...")
