@@ -29,7 +29,6 @@ def setup_logging():
 
 def get_chromedriver_path():
     chromedriver_path = os.getenv('CHROMEDRIVER_PATH')
-    print(chromedriver_path)
     if chromedriver_path is None:
         raise ValueError("Environment variable 'CHROMEDRIVER_PATH' is not set.")
     return chromedriver_path
@@ -59,14 +58,13 @@ def setup_driver():
     return driver
 
 def scraper(csv_path, start, end):
-    options = Options()
     chrome_options = Options()
     chrome_options.headless = True
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--no-sandbox')
-    driver = webdriver.Chrome(service=Service(get_chromedriver_path()), options=options)
+    driver = webdriver.Chrome(service=Service(get_chromedriver_path()), options=chrome_options)
     urls = pd.read_csv(csv_path)['url'][start:end].tolist()
     
     for url in urls:
