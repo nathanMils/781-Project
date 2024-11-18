@@ -1,0 +1,14 @@
+# Local Database for Top 1 Million Websites
+
+This local database serves as an alternative to the PageRank API by providing a list of the top 1 million websites. The database is designed to be lightweight and efficient, allowing for quick lookups and easy integration into your projects.
+
+## Features
+
+- Contains the top 1 million websites ranked by popularity.
+- Provides a local alternative to online PageRank APIs.
+- Fast and efficient lookups.
+- Easy to integrate with existing projects.
+
+## Database Structure
+
+The database is stored in a simple SQLite format for ease of use and portability. The table structure is as follows:

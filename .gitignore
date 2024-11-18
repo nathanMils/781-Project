@@ -170,3 +170,6 @@ common_crawl/wet_paths/*
 common_crawl/wet_data/*
 common_crawl/wat_paths/*
 common_crawl/wat_data/*
+
+scraper/database/domains.db
+data/top_million/

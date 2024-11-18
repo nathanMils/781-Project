@@ -15,7 +15,6 @@ import logging
 import time
 import dns.resolver
 
-logger = logging.getLogger('process.determine')
 
 
 ## ADDRESS BAR BASED FEATURES #########################################################
@@ -48,12 +47,9 @@ def is_having_ip(url):
         hex_pattern = re.compile(r'^(?:0x[0-9A-Fa-f]{1,2}\.){3}0x[0-9A-Fa-f]{1,2}$')
         
         if ipv4_pattern.match(hostname) or hex_pattern.match(hostname):
-            logger.debug(f"URL: {url} is having an IP address.")
             return -1
-        logger.debug(f"URL: {url} is not having an IP address.")
         return 1
     except Exception:
-        logger.error(f"Error occurred while determining if the URL: {url} is having an IP address.")
         return 1
 
 ## RULE: Long URL to Hide the Suspicious Part
@@ -63,13 +59,10 @@ def is_url_long(url):
     url_length = len(url)
     
     if url_length < 54:
-        logger.debug(f"URL: {url} is legitimate with length {url_length}.")
         return 1  # Legitimate
     elif 54 <= url_length <= 75:
-        logger.debug(f"URL: {url} is suspicious with length {url_length}.")
         return 0  # Suspicious
     else:
-        logger.debug(f"URL: {url} is phishing with length {url_length}.")
         return -1  # Phishing
             
     
@@ -451,13 +444,14 @@ def is_submitting_to_email_direct(html, soup):
 
 ## RULE: Abnormal URL
 ## STATUS: FINISHED
-def is_abnormal_url(url, w):
+def is_abnormal_url(url):
     """Determines if the URL is abnormal."""
     ext = tldextract.extract(url)
     host_name = ext.domain + '.' + ext.suffix
+    w = whois.whois(url)
     if w and 'domain_name' in w:
         domain_names = w['domain_name']
-        logger.info(f"Domain names: {domain_names}")
+        print(f"Domain names: {domain_names}")
         if isinstance(domain_names, list):
             for domain in domain_names:
                 if host_name.lower() == domain.lower():
@@ -589,38 +583,14 @@ def is_dns_record(url, timeout=5):
         return -1
     
     return -1
-    
-
-
-
-api_key = os.getenv('DIGITAL_RANK_API_KEY')
-
-def get_digital_rank(domain):
-    try:
-        if domain.startswith("www."):
-            domain = domain[4:]
-            
-        url = f"https://api.similarweb.com/v1/similar-rank/{domain}/rank?api_key={api_key}"
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return None
-    except Exception:
-        logger.error(f"Error occurred while fetching digital rank for domain: {domain}")
-        return None
 
 ## RULE: Web Traffic
 ## STATUS: FINISHED
-def is_web_traffic(url):
+def is_web_traffic(data):
     """Determines if the URL has suspicious web traffic."""
-    url = urlparse(url)
-    domain = url.netloc
-    data = get_digital_rank(domain)
     if data is None:
         return -1
-    global_rank = data.get("similar_rank", {}).get("rank", None)
+    global_rank = data.get('response', [{}])[0].get("rank", None)
         
     if global_rank is not None:
         if global_rank < 100000:
@@ -630,10 +600,10 @@ def is_web_traffic(url):
     else:
         return -1
     
-def get_open_page_rank(domain):
+def get_open_page_rank(url):
     try:
-        if domain.startswith("www."):
-            domain = domain[4:]
+        parsed_url = urlparse(url)
+        domain = parsed_url.netloc
         url = "https://openpagerank.com/api/v1.0/getPageRank"
         params = {
             "domains[]": domain
@@ -650,16 +620,13 @@ def get_open_page_rank(domain):
         else:
             return None
     except Exception:
-        logger.error(f"Error occurred while fetching Open Page Rank for domain: {domain}")
+        logging.error(f"Error occurred while fetching Open Page Rank for domain: {domain}")
         return None
 
 ## RULE: Page Rank
 ## STATUS: FINISHED
-def is_page_rank(url):
+def is_page_rank(data):
     """Determines if the URL has a suspicious page rank."""
-    domain = urlparse(url).netloc
-    
-    data = get_open_page_rank(domain)
     page_rank = data.get('response', [{}])[0].get('page_rank_decimal', None)
     
     if page_rank is None:
@@ -672,29 +639,46 @@ def is_page_rank(url):
 
 SERP_API_KEY = os.getenv('SERP_API_KEY')
 
-def is_website_indexed(domain):
+def is_website_indexed(url):
+    """
+    Checks if a specific URL is indexed by Google using SerpAPI.
+    
+    :param url: The full URL to check for indexing.
+    :return: True if indexed, False otherwise.
+    """
     try:
-        url = "https://google.serper.dev/search"
-
-        query = f"site:{domain}"
-        payload = json.dumps({
-            "q": query
-        })
+        parsed_url = urlparse(url)
+        full_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}"
+        
+        query = f"site:{full_url}"
+        
+        api_url = "https://google.serper.dev/search"
+        payload = json.dumps({"q": query})
         headers = {
             'X-API-KEY': SERP_API_KEY,
             'Content-Type': 'application/json'
         }
 
-        response = requests.request("POST", url, headers=headers, data=payload)
+        response = requests.post(api_url, headers=headers, data=payload)
 
         if response.status_code == 200:
-            return response.json()
+            results = response.json()
+            if results.get("organic", []):
+                return 1
+            else:
+                return -1
         else:
-            logger.error(f"An error occurred: {response.text}")
-            return False
+            logging.error(f"API request failed with status {response.status_code}: {response.text}")
+            if (response.status_code == 403):
+                return "STOP"
+            
+            if (response.status_code == 429):
+                time.sleep(20)
+                return is_website_indexed(url)
+            return 1
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
-        return False
+        logging.error(f"Error occurred while checking Google Index for URL: {url}, error: {e}")
+        return 1
 
 # RULE: Google Index UPDATE
 # STATUS: FINISHED
@@ -740,6 +724,7 @@ def is_links_pointing_to_page(url, soup):
 ## RULE: Statistical Reports
 ## STATUS: FINISHED
 ## List of top phishing domains and IPs
+# CloudFlare
 top_phishing_tlds = [
     # Cheap and Open TLDs
     ".xyz", ".top", ".club", ".online", ".shop", ".site", ".vip", ".buzz",
@@ -802,149 +787,32 @@ def get_whois(url):
         return domain
     except Exception:
         return False
-
-def is_phishing_no_html(url):
-    """Determines if a URL is a phishing website or not."""
-    if not check_if_valid(url):
-        logger.error(f"Invalid URL: {url}")
-        return "INVALID"
-    response = check_if_reachable(url)
-    if not response:
-        logger.error(f"Unreachable URL: {url}")
-        return "UNREACHABLE"
-    soup = parse_html(response)
-    if not soup:
-        logger.error(f"Error parsing HTML content for URL: {url}")
-        return "ERROR"
-    domain = get_whois(url)
-    if not domain:
-        logger.error(f"Error fetching WHOIS information for URL: {url}")
-        return "ERROR"
-
     
-    data = {
-        "having_ip_address": is_having_ip(url),
-        "url_length": is_url_long(url),
-        "shortining_service": is_shortening_service(url),
-        "having_at_symbol": is_having_at_symbol(url),
-        "double_slash_redirecting": is_double(url),
-        "prefix_suffix": is_prefix_suffix(url),
-        "having_sub_domain": is_having_sub_domain(url),
-        "sslfinal_state": is_https(url),
-        "domain_registration_length": is_domain_registration_length(domain),
-        "favicon": is_favicon(url, soup),
-        "port": is_port(url),
-        "https_token": is_https_token(url),
-        "request_url": is_request_url(url, soup),
-        "url_of_anchor": is_url_of_anchor(url, soup),
-        "links_in_tags": is_links_in_tags(url, soup),
-        "sfh": is_sfh(url, soup),
-        "submitting_to_email": is_submitting_to_email(response, soup),
-        "abnormal_url": is_abnormal_url(url, domain),
-        "redirect": is_redirect(response),
-        "on_mouseover": is_on_mouseover(soup),
-        "rightclick": is_rightclick(soup),
-        "popupwindow": is_popupwindow(soup),
-        "iframe": is_iframe(soup),
-        "age_of_domain": is_age_of_domain(domain),
-        "dnsrecord": is_dns_record(url),
-        "web_traffic": is_web_traffic(url),
-        "page_rank": is_page_rank(url),
-        "google_index": is_google_index(url),
-        "links_pointing_to_page": is_links_pointing_to_page(url, soup),
-        "statistical_report": is_statistical_report(url)
-    }
-    
-    return data
-
-def is_phishing_no_html_time(url):
-    """Determines if a URL is a phishing website or not."""
-    timing_data = {}  # Dictionary to store the time taken for each feature
-
-    if not check_if_valid(url):
-        logger.error(f"Invalid URL: {url}")
-        return "INVALID", timing_data
-    
-    response = check_if_reachable(url)
-    if not response:
-        logger.error(f"Unreachable URL: {url}")
-        return "UNREACHABLE", timing_data
-    
-    soup = parse_html(response)
-    if not soup:
-        logger.error(f"Error parsing HTML content for URL: {url}")
-        return "ERROR", timing_data
-    
-    domain = get_whois(url)
-    if not domain:
-        logger.error(f"Error fetching WHOIS information for URL: {url}")
-        return "ERROR", timing_data
-
-    # Function to measure time taken for each feature
-    def time_feature_check(func, *args):
-        start_time = time.time()
-        result = func(*args)
-        elapsed_time = time.time() - start_time
-        return result, elapsed_time
-
-    # Collect data and measure time for each feature
-    data = {}
-    data["having_ip_address"], timing_data["having_ip_address"] = time_feature_check(is_having_ip, url)
-    data["url_length"], timing_data["url_length"] = time_feature_check(is_url_long, url)
-    data["shortining_service"], timing_data["shortining_service"] = time_feature_check(is_shortening_service, url)
-    data["having_at_symbol"], timing_data["having_at_symbol"] = time_feature_check(is_having_at_symbol, url)
-    data["double_slash_redirecting"], timing_data["double_slash_redirecting"] = time_feature_check(is_double, url)
-    data["prefix_suffix"], timing_data["prefix_suffix"] = time_feature_check(is_prefix_suffix, url)
-    data["having_sub_domain"], timing_data["having_sub_domain"] = time_feature_check(is_having_sub_domain, url)
-    data["sslfinal_state"], timing_data["sslfinal_state"] = time_feature_check(is_https, url)
-    data["domain_registration_length"], timing_data["domain_registration_length"] = time_feature_check(is_domain_registration_length, domain)
-    data["favicon"], timing_data["favicon"] = time_feature_check(is_favicon, url, soup)
-    data["port"], timing_data["port"] = time_feature_check(is_port, url)
-    data["https_token"], timing_data["https_token"] = time_feature_check(is_https_token, url)
-    data["request_url"], timing_data["request_url"] = time_feature_check(is_request_url, url, soup)
-    data["url_of_anchor"], timing_data["url_of_anchor"] = time_feature_check(is_url_of_anchor, url, soup)
-    data["links_in_tags"], timing_data["links_in_tags"] = time_feature_check(is_links_in_tags, url, soup)
-    data["sfh"], timing_data["sfh"] = time_feature_check(is_sfh, url, soup)
-    data["submitting_to_email"], timing_data["submitting_to_email"] = time_feature_check(is_submitting_to_email, response, soup)
-    data["abnormal_url"], timing_data["abnormal_url"] = time_feature_check(is_abnormal_url, url)
-    data["redirect"], timing_data["redirect"] = time_feature_check(is_redirect, response)
-    data["on_mouseover"], timing_data["on_mouseover"] = time_feature_check(is_on_mouseover, soup)
-    data["rightclick"], timing_data["rightclick"] = time_feature_check(is_rightclick, soup)
-    data["popupwindow"], timing_data["popupwindow"] = time_feature_check(is_popupwindow, soup)
-    data["iframe"], timing_data["iframe"] = time_feature_check(is_iframe, soup)
-    data["age_of_domain"], timing_data["age_of_domain"] = time_feature_check(is_age_of_domain, domain)
-    data["dnsrecord"], timing_data["dnsrecord"] = time_feature_check(is_dns_record, url)
-    data["web_traffic"], timing_data["web_traffic"] = time_feature_check(is_web_traffic, url)
-    data["page_rank"], timing_data["page_rank"] = time_feature_check(is_page_rank, url)
-    data["google_index"], timing_data["google_index"] = time_feature_check(is_google_index, url)
-    data["links_pointing_to_page"], timing_data["links_pointing_to_page"] = time_feature_check(is_links_pointing_to_page, url, soup)
-    data["statistical_report"], timing_data["statistical_report"] = time_feature_check(is_statistical_report, url)
-    
-    return data, timing_data
-
 def validate_value(value):
     """Ensures the value is either 0, -1, or 1. Returns None if not."""
     if value in {0, -1, 1}:
         return value
     return None
-
+    
 def collect_data(url, html): 
     """Determines if a URL is a phishing website or not."""
     if not check_if_valid(url):
-        logger.error(f"Invalid URL: {url}")
+        logging.error(f"Invalid URL: {url}")
         return None
     response = check_if_reachable(url)
     if not response:
-        logger.error(f"Unreachable URL: {url}")
+        logging.error(f"Unreachable URL: {url}")
         return None
     soup = parse_html_direct(html)
     if not soup:
-        logger.error(f"Error parsing HTML content for URL: {url}")
+        logging.error(f"Error parsing HTML content for URL: {url}")
         return None
     domain = get_whois(url)
     if not domain:
-        logger.error(f"Error fetching WHOIS information for URL: {url}")
+        logging.error(f"Error fetching WHOIS information for URL: {url}")
         return None
+    
+    open_page_rank = get_open_page_rank(url)
     
     data = {
         "website_url": url,
@@ -965,7 +833,7 @@ def collect_data(url, html):
         "links_in_tags": is_links_in_tags(url, soup),
         "sfh": is_sfh(url, soup),
         "submitting_to_email": is_submitting_to_email_direct(html, soup),
-        "abnormal_url": is_abnormal_url(url, domain),
+        "abnormal_url": is_abnormal_url(url),
         "redirect": is_redirect(response),
         "on_mouseover": is_on_mouseover(soup),
         "rightclick": is_rightclick(soup),
@@ -973,8 +841,8 @@ def collect_data(url, html):
         "iframe": is_iframe(soup),
         "age_of_domain": is_age_of_domain(domain),
         "dnsrecord": is_dns_record(url),
-        "web_traffic": is_web_traffic(url),
-        "page_rank": is_page_rank(url),
+        "web_traffic": is_web_traffic(open_page_rank),
+        "page_rank": is_page_rank(open_page_rank),
         "google_index": is_google_index(url),
         "links_pointing_to_page": is_links_pointing_to_page(url, soup),
         "statistical_report": is_statistical_report(url),
@@ -991,169 +859,3 @@ def collect_data(url, html):
         data[key] = validated_value
     
     return data
-
-def is_phishing(url, html):
-    """Determines if a URL is a phishing website or not."""
-    if not check_if_valid(url):
-        logger.error(f"Invalid URL: {url}")
-        return "INVALID"
-    response = check_if_reachable(url)
-    if not response:
-        logger.error(f"Unreachable URL: {url}")
-    soup = parse_html_direct(html)
-    if not soup:
-        logger.error(f"Error parsing HTML content for URL: {url}")
-        return "ERROR"
-    domain = get_whois(url)
-    if not domain:
-        logger.error(f"Error fetching WHOIS information for URL: {url}")
-        return "ERROR"
-    
-    data = {
-        "having_ip_address": is_having_ip(url),
-        "url_length": is_url_long(url),
-        "shortining_service": is_shortening_service(url),
-        "having_at_symbol": is_having_at_symbol(url),
-        "double_slash_redirecting": is_double(url),
-        "prefix_suffix": is_prefix_suffix(url),
-        "having_sub_domain": is_having_sub_domain(url),
-        "sslfinal_state": is_https(url),
-        "domain_registration_length": is_domain_registration_length(domain),
-        "favicon": is_favicon(url, soup),
-        "port": is_port(url),
-        "https_token": is_https_token(url),
-        "request_url": is_request_url(url, soup),
-        "url_of_anchor": is_url_of_anchor(url, soup),
-        "links_in_tags": is_links_in_tags(url, soup),
-        "sfh": is_sfh(url, soup),
-        "submitting_to_email": is_submitting_to_email_direct(html, soup),
-        "abnormal_url": is_abnormal_url(url, domain),
-        "redirect": is_redirect(response),
-        "on_mouseover": is_on_mouseover(soup),
-        "rightclick": is_rightclick(soup),
-        "popupwindow": is_popupwindow(soup),
-        "iframe": is_iframe(soup),
-        "age_of_domain": is_age_of_domain(domain),
-        "dnsrecord": is_dns_record(url),
-        "web_traffic": is_web_traffic(url),
-        "page_rank": is_page_rank(url),
-        "google_index": is_google_index(url),
-        "links_pointing_to_page": is_links_pointing_to_page(url, soup),
-        "statistical_report": is_statistical_report(url)
-    }
-    
-    return data
-
-def is_phishing_information_gain(url, html):
-    if not check_if_valid(url):
-        logger.error(f"Invalid URL: {url}")
-        return "INVALID"
-    response = check_if_reachable(url)
-    if not response:
-        logger.error(f"Unreachable URL: {url}")
-    soup = parse_html_direct(html)
-    if not soup:
-        logger.error(f"Error parsing HTML content for URL: {url}")
-        return "ERROR"
-    domain = get_whois(url)
-    if not domain:
-        logger.error(f"Error fetching WHOIS information for URL: {url}")
-        return "ERROR"
-    
-    data = {
-        "url_of_anchor": is_url_of_anchor(url, soup),
-        "prefix_suffix": is_prefix_suffix(url),
-        "web_traffic": is_web_traffic(url),
-        "having_sub_domain": is_having_sub_domain(url),
-        "links_in_tags": is_links_in_tags(url, soup),
-        "request_url": is_request_url(url, soup),
-        "sfh": is_sfh(url, soup),
-        "domain_registration_length": is_domain_registration_length(domain),
-        "google_index": is_google_index(url),
-        "age_of_domain": is_age_of_domain(domain),
-        "page_rank": is_page_rank(url),
-        "links_pointing_to_page": is_links_pointing_to_page(url, soup),
-        "dnsrecord": is_dns_record(url),
-        "shortining_service": is_shortening_service(url),
-        "abnormal_url": is_abnormal_url(url, domain),
-        "on_mouseover": is_on_mouseover(soup),
-        "double_slash_redirecting": is_double(url),
-        "redirect": is_redirect(response),
-        "submitting_to_email": is_submitting_to_email_direct(html, soup),
-        "rightclick": is_rightclick(soup)
-    }
-
-
-    return data
-
-def is_phishing_composite(url, html):
-    if not check_if_valid(url):
-        logger.error(f"Invalid URL: {url}")
-        return "INVALID"
-    response = check_if_reachable(url)
-    if not response:
-        logger.error(f"Unreachable URL: {url}")
-    soup = parse_html_direct(html)
-    if not soup:
-        logger.error(f"Error parsing HTML content for URL: {url}")
-        return "ERROR"
-    domain = get_whois(url)
-    if not domain:
-        logger.error(f"Error fetching WHOIS information for URL: {url}")
-        return "ERROR"
-    
-    data = {
-        "url_of_anchor": is_url_of_anchor(url, soup),
-        "prefix_suffix": is_prefix_suffix(url),
-        "having_sub_domain": is_having_sub_domain(url),
-        "links_in_tags": is_links_in_tags(url, soup),
-        "request_url": is_request_url(url, soup),
-        "sfh": is_sfh(url, soup),
-        "domain_registration_length": is_domain_registration_length(domain),
-        "age_of_domain": is_age_of_domain(domain),
-        "statistical_report": is_statistical_report(url),
-        "dnsrecord": is_dns_record(url),
-        "links_pointing_to_page": is_links_pointing_to_page(url, soup),
-        "shortining_service": is_shortening_service(url),
-        "abnormal_url": is_abnormal_url(url, domain),
-        "having_at_symbol": is_having_at_symbol(url),
-        "on_mouseover": is_on_mouseover(soup),
-        "double_slash_redirecting": is_double(url),
-        "port": is_port(url),
-        "redirect": is_redirect(response),
-        "favicon": is_favicon(url, soup),
-        "iframe": is_iframe(soup)
-    }
-
-
-    return data
-
-if __name__ == "__main__":
-    urls = [
-        "https://www.google.com",
-        "https://www.facebook.com",
-        "https://www.youtube.com",
-        "https://www.twitter.com",
-        "https://www.instagram.com",
-        "https://www.pinterest.com",
-        "https://www.reddit.com",
-        "https://www.wikipedia.org",
-        "https://www.amazon.com",
-        "https://www.netflix.com",
-        "https://www.amazon.com",
-    ]
-    collected_data = []
-    for url in urls:
-        data, timing_data = is_phishing_no_html_time(url)
-
-        print(f"URL: {url}")
-        print("Data: ", data)
-        print("Timing Data: ", timing_data)
-        collected_data.append({
-            "URL": url,
-            "Data": data,
-            "Timing Data": timing_data
-        })
-    
-    with open('./data/collected/time_data.json', 'w') as f:
-        json.dump(collected_data, f, indent=4)
