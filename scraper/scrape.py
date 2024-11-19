@@ -13,6 +13,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import selenium
 import logging
 import coloredlogs
 import uuid
@@ -71,9 +72,17 @@ def scraper(csv_path, start, end):
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--no-sandbox')
-    driver = webdriver.Chrome(service=Service(get_chromedriver_path()), options=chrome_options)
-    urls = pd.read_csv(csv_path)['website_url'][start:end].tolist()
     
+    def initialize_driver():
+        try:
+            return webdriver.Chrome(service=Service(get_chromedriver_path()), options=chrome_options)
+        except Exception as e:
+            logging.error(f"Failed to initialize the WebDriver: {e}")
+            raise e
+
+    driver = initialize_driver()
+    urls = pd.read_csv(csv_path)['website_url'][start:end].tolist()
+
     for url in urls:
         logging.info(f"Checking if URL {url} is reachable...")
         if not is_url_reachable(url):
@@ -82,22 +91,33 @@ def scraper(csv_path, start, end):
 
         logging.info(f"Scraping {url}...")
 
-        driver.get(url)
         try:
+            driver.get(url)
             WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
             logging.info(f"Page loaded: {url}")
+        except selenium.common.exceptions.InvalidSessionIdException as e:
+            logging.error(f"Invalid session for {url}: {e}")
+            # Reinitialize the driver to recover from session loss
+            driver.quit()
+            driver = initialize_driver()
+            continue
         except Exception as e:
             logging.error(f"Error loading page {url}: {e}")
             continue
 
-        html_content = driver.page_source
-        cookies = driver.get_cookies()
-        headers = fetch_headers(driver)
-        data_queue.put({'url': url, 'html': html_content, 'cookies': cookies, 'headers': headers})
-        logging.info(f"Waiting for the parser to process {url}...")
-        data_queue.join()
-        time.sleep(random.uniform(3, 5))
-    
+        # Scrape data
+        try:
+            html_content = driver.page_source
+            cookies = driver.get_cookies()
+            headers = fetch_headers(driver)
+            data_queue.put({'url': url, 'html': html_content, 'cookies': cookies, 'headers': headers})
+            logging.info(f"Waiting for the parser to process {url}...")
+            data_queue.join()
+            time.sleep(random.uniform(3, 5))
+        except Exception as e:
+            logging.error(f"Error during data extraction for {url}: {e}")
+            continue
+
     driver.quit()
 
 def parser():
