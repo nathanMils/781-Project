@@ -810,6 +810,7 @@ def collect_data(url, html):
     logging.info(f"Page rank data: {open_page_rank}")
     data = {
         "website_url": url,
+        "open_page_rank": open_page_rank,
         "having_ip_address": is_having_ip(url),
         "url_length": is_url_long(url),
         "shortining_service": is_shortening_service(url),
