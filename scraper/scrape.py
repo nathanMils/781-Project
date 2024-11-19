@@ -83,9 +83,9 @@ def scraper(csv_path, start, end, randomize=False):
     driver = initialize_driver()
     urls = None
     if randomize:
-        urls = pd.read_csv(csv_path)['website_url'].sample(n=end).tolist()
+        urls = pd.read_csv(csv_path)['url'].sample(n=end).tolist()
     else:
-        urls = pd.read_csv(csv_path)['website_url'][start:end].tolist()
+        urls = pd.read_csv(csv_path)['url'][start:end].tolist()
 
     for url in urls:
         logging.info(f"Checking if URL {url} is reachable...")
