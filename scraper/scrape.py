@@ -109,18 +109,18 @@ def scraper(csv_path, start, end, randomize=False):
             logging.error(f"Error loading page {url}: {e}")
             continue
 
-        # Scrape data
-        # try:
-        html_content = driver.page_source
-        cookies = driver.get_cookies()
-        headers = fetch_headers(driver)
-        data_queue.put({'url': url, 'html': html_content, 'cookies': cookies, 'headers': headers})
-        logging.info(f"Waiting for the parser to process {url}...")
-        data_queue.join()
-        time.sleep(random.uniform(3, 5))
-        # except Exception as e:
-        #     logging.error(f"Error during data extraction for {url}: {e}")
-        #     continue
+        try:
+            html_content = driver.page_source
+            cookies = driver.get_cookies()
+            headers = fetch_headers(driver)
+            data_queue.put({'url': url, 'html': html_content, 'cookies': cookies, 'headers': headers})
+            logging.info(f"Waiting for the parser to process {url}...")
+            data_queue.join()
+            time.sleep(random.uniform(3, 5))
+        except Exception as e:
+            logging.error(f"Error during data extraction for {url}: {e}", exc_info=True)
+            
+            continue
 
     driver.quit()
 
