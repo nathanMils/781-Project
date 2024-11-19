@@ -454,7 +454,7 @@ def is_abnormal_url(url):
     w = whois.whois(url)
     if w and 'domain_name' in w:
         domain_names = w['domain_name']
-        print(f"Domain names: {domain_names}")
+        logging.info(f"Domain names: {domain_names}")
         if isinstance(domain_names, list):
             for domain in domain_names:
                 if host_name.lower() == domain.lower():
