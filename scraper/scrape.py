@@ -57,6 +57,13 @@ def setup_driver():
     driver = webdriver.Chrome(service=Service(get_chromedriver_path()), options=options)
     return driver
 
+def fetch_headers(driver):
+    try:
+        return driver.execute_script("return window.performance.getEntries()")
+    except Exception as e:
+        logging.error(f"Error fetching headers: {e}")
+        return None
+
 def scraper(csv_path, start, end):
     chrome_options = Options()
     chrome_options.headless = True
@@ -77,7 +84,7 @@ def scraper(csv_path, start, end):
 
         driver.get(url)
         try:
-            WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+            WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.TAG_NAME, 'a')))
             logging.info(f"Page loaded: {url}")
         except Exception as e:
             logging.error(f"Error loading page {url}: {e}")
@@ -85,7 +92,7 @@ def scraper(csv_path, start, end):
 
         html_content = driver.page_source
         cookies = driver.get_cookies()
-        headers = driver.execute_script("return window.performance.getEntries()")
+        headers = fetch_headers(driver)
         data_queue.put({'url': url, 'html': html_content, 'cookies': cookies, 'headers': headers})
         logging.info(f"Waiting for the parser to process {url}...")
         data_queue.join()
