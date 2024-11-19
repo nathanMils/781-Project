@@ -688,15 +688,7 @@ def is_website_indexed(url):
 def is_google_index(url):
     """Determines if the URL is indexed by Google."""
 
-    data = is_website_indexed(url)
-
-    if not data:
-        return -1
-    
-    if "organic" in data and len(data["organic"]) > 0:
-        return 1
-    else:
-        return -1
+    return is_website_indexed(url)
 
 ## RULE: Number of Links Pointing to Page
 ## STATUS: FINISHED
