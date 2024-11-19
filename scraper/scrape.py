@@ -84,7 +84,7 @@ def scraper(csv_path, start, end):
 
         driver.get(url)
         try:
-            WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.TAG_NAME, 'a')))
+            WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
             logging.info(f"Page loaded: {url}")
         except Exception as e:
             logging.error(f"Error loading page {url}: {e}")
