@@ -593,7 +593,9 @@ def is_web_traffic(data):
     """Determines if the URL has suspicious web traffic."""
     if data is None:
         return -1
-    global_rank = data.get('response', [{}])[0].get("rank", None)
+
+    entry = data['response'][0]  # Assuming there's always one entry
+    global_rank = int(entry['rank']) if 'rank' in entry else None
         
     if global_rank is not None:
         if global_rank < 100000:

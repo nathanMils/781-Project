@@ -119,13 +119,13 @@ def parser():
 
 
 def parse_data(url, html_content, cookies, headers):
-    # try:
+    try:
         data = collect_data(url, html_content)
         if data is not None:
             append_html_to_json(url, html_content, cookies, headers, data)
-    # except Exception as e:
-    #     logging.error(f"Error parsing data for URL {url}: {e}")
-    #     return "ERROR"
+    except Exception as e:
+        logging.error(f"Error parsing data for URL {url}: {e}")
+        return "ERROR"
 
 output_file = 'complete_data.json'
 
