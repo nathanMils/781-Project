@@ -25,7 +25,7 @@ data_queue = queue.Queue()
 
 def setup_logging():
     log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    coloredlogs.install(level='DEBUG', fmt=log_format)
+    coloredlogs.install(level='INFO', fmt=log_format)
 
 def get_chromedriver_path():
     chromedriver_path = os.getenv('CHROMEDRIVER_PATH')
@@ -152,7 +152,7 @@ def append_html_to_json(url, html_content, cookies, headers, data):
         with open(output_file, 'w', encoding='utf-8') as file:
             json.dump([data], file, indent=4)
 
-    print(f"Appended HTML content for {url} in {output_file}")
+    logging.info(f"Appended HTML content for {url} in {output_file}")
 
 def main():
     load_dotenv(dotenv_path='./.env')
