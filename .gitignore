@@ -173,3 +173,4 @@ common_crawl/wat_data/*
 
 scraper/database/domains.db
 data/top_million/
+data/collected/collected_phish_data.json

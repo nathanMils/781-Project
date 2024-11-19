@@ -14,6 +14,7 @@ import tldextract
 import logging
 import time
 import dns.resolver
+import idna
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path='./.env')
@@ -736,7 +737,204 @@ def is_statistical_report(url):
     if f".{ext.suffix}" in top_phishing_tlds:
         return -1  # Phishing
     
-    return 1 
+    return 1
+
+########################################################################################
+## ADDED FEATURES ######################################################################
+
+
+## BRAND IMPERSONATION BASED FEATURES ##################################################
+# 1. Presence of Numbers in the Domain
+def has_numbers_in_domain(url: str) -> bool:
+    domain = urlparse(url).netloc
+    if bool(re.search(r'\d', domain)):
+        return 0
+    return 1
+
+# 2. Presence of Special Characters in the Domain
+def has_special_characters_in_domain(url: str) -> bool:
+    domain = urlparse(url).netloc
+    special_chars = set("!#$%&'()*+,/:;<=>?@[\\]^`{|}~")
+    if any(char in special_chars for char in domain):
+        return 0
+    return 1
+
+# 3. Presence of IDN Spoofing in the Domain
+HOMOGLYPHS = {
+    'a': ['α', 'а'],  # Latin 'a' vs Greek 'alpha' and Cyrillic 'a'
+    'o': ['ο', 'օ'],  # Latin 'o' vs Greek 'omicron' and Armenian 'o'
+    'e': ['е'],       # Latin 'e' vs Cyrillic 'e'
+    'i': ['і', '١'],   # Latin 'i' vs Cyrillic 'і' and Arabic digit '1'
+    'l': ['ӏ', '١'],   # Latin 'l' vs Cyrillic 'ӏ' and Arabic digit '1'
+    'u': ['υ'],       # Latin 'u' vs Greek 'upsilon'
+    'c': ['с'],       # Latin 'c' vs Cyrillic 'с'
+    'n': ['п'],       # Latin 'n' vs Cyrillic 'п'
+}
+
+## NOT USED NOT ENOUGH DATA TO BE AFFECTIVE
+def homoglyph(url):
+    try:
+        parsed_url = urlparse(url)
+        domain = parsed_url.netloc
+        
+        is_idn = not domain.isascii()
+        suspicious_chars = []
+
+        if is_idn:
+            for char in domain:
+                for key, glyphs in HOMOGLYPHS.items():
+                    if char in glyphs:
+                        suspicious_chars.append((char, key))
+            
+            if suspicious_chars:
+                return -1
+            else:
+                return 0
+        else:
+            return 1
+    except Exception as e:
+        print(f"Error parsing URL: {e}")
+        return 1
+    
+# 4. Presence of Brand Name in the Domain - CUSTOM Approach
+
+KNOWN_BRANDS_DOMAINS = [
+    "microsoft",
+    "apple",
+    "google",
+    "facebook",
+    "whatsapp",
+    "amazon",
+    "alibaba",
+    "adobe",
+    "twitter",
+    "adidas",
+    "netflix",
+    "paypal",
+    "bankofamerica",
+    "chase",
+    "wellsfargo",
+    "linkedin",
+    "ebay",
+    "instagram",
+    "zoom",
+    "dropbox",
+    "youtube",
+    "airbnb",
+    "spotify",
+    "appleid"
+]
+
+import Levenshtein
+
+def extract_domain_and_subdomains(url):
+    """
+    Extract the domain, subdomains, and TLD from a given URL using tldextract.
+    """
+    extracted = tldextract.extract(url)
+    subdomains = extracted.subdomain.split('.') if extracted.subdomain else []
+    domain = extracted.domain
+    return domain, subdomains
+
+def overlapping_substrings(string, n):
+    """
+    Breaks the string into overlapping substrings of length n with a stride of 1.
+    If there are fewer than n characters remaining at the end, it takes the remaining characters.
+    """
+    substrings = []
+    for i in range(len(string) - n + 1):
+        substrings.append(string[i:i + n])
+    
+    if len(string) - (len(string) - n + 1) > 0:
+        substrings.append(string[-n:])
+    
+    return substrings
+
+def check_brands(url, brand_name="microsoft"):
+    """
+    Analyzes the URL for phishing indicators based on domain and subdomain similarity to brand name.
+    Uses Levenshtein distance normalized by the length of the target brand name.
+    """
+    domain, subdomains = extract_domain_and_subdomains(url)
+    domain_and_subdomains = ''.join(sub.replace('.', '') for sub in subdomains) + domain.replace('.', '')
+    brand_len = len(brand_name)
+    domain_substrings = overlapping_substrings(domain_and_subdomains, brand_len)
+    domain_levenshtein_distances = [Levenshtein.distance(sub, brand_name) for sub in domain_substrings]
+    
+    min_distance = min(domain_levenshtein_distances)
+    normalized_distance = min_distance / brand_len
+    return normalized_distance
+
+def is_brand_impersonation_lev(url):
+    """
+    Determines if the URL is impersonating a known brand.
+    """
+    domain, _ = extract_domain_and_subdomains(url)
+    if domain in KNOWN_BRANDS_DOMAINS:
+        return 1
+    current = 1
+    current_similarity = 100
+    for brand in KNOWN_BRANDS_DOMAINS:
+        distance = check_brands(url, brand)
+        if distance < 0.2:
+            return -1, distance
+        elif distance < current_similarity:
+            current = 0
+            current_similarity = distance
+
+    return current, current_similarity
+
+from fuzzywuzzy import fuzz
+
+def is_brand_impersonation_fuzzy(url):
+    """
+    Analyzes the URL for phishing indicators based on domain and subdomain similarity to brand name.
+    Uses fuzzy matching (Levenshtein distance) to compare strings.
+    """
+    domain, subdomains = extract_domain_and_subdomains(url)
+    if domain in KNOWN_BRANDS_DOMAINS:
+        return 1
+    current = 1
+    current_similarity = 0
+    for brand in KNOWN_BRANDS_DOMAINS:
+        similarity = fuzz.ratio(domain, brand)
+        if similarity > 70:
+            return -1, similarity
+        elif similarity > 50:
+            current = 0
+            current_similarity = max(current_similarity, similarity)
+    
+    for brand in KNOWN_BRANDS_DOMAINS:
+        for subdomain in subdomains:
+            similarity = fuzz.ratio(subdomain, brand)
+            if similarity > 70:
+                return -1, similarity
+            elif similarity > current_similarity:
+                current = 0
+                current_similarity = similarity
+    return current, current_similarity
+
+def num_subdomains(url):
+    _, subdomains = extract_domain_and_subdomains(url)
+    if len(subdomains) in {0, 1}:
+        return 1, 0
+    elif len(subdomains) > 1:
+        return -1, len(subdomains)
+
+def length_of_subdomains(url):
+    subdomains = tldextract.extract(url).subdomain
+    length = len(subdomains) if subdomains else 0
+    if subdomains:
+        if len(subdomains) < 8:
+            return 1, length
+        elif 8 <= len(subdomains) <= 15:
+            return 0, length
+        else:
+            return -1, length
+
+########################################################################################
+
+
 
 
 ########################################################################################
@@ -808,6 +1006,13 @@ def collect_data(url, html):
     
     open_page_rank = get_open_page_rank(url)
     logging.info(f"Page rank data: {open_page_rank}")
+
+    lev, sim_lev = is_brand_impersonation_lev(url)
+    fuzz, sim_fuzz = is_brand_impersonation_fuzzy(url)
+
+    num_sub, num_of_subdomains = num_subdomains(url)
+    len_sub, len_of_subdomains = length_of_subdomains(url)
+
     data = {
         "website_url": url,
         "having_ip_address": is_having_ip(url),
@@ -840,16 +1045,25 @@ def collect_data(url, html):
         "google_index": is_google_index(url),
         "links_pointing_to_page": is_links_pointing_to_page(url, soup),
         "statistical_report": is_statistical_report(url),
+        "has_numbers": has_numbers_in_domain(url),
+        "special_characters": has_special_characters_in_domain(url),
+        "lev": lev,
+        "sim_lev": sim_lev,
+        "fuzzy": fuzz,
+        "sim_fuzz": sim_fuzz,
+        "num_sub": num_sub,
+        "num_of_subdomains": num_of_subdomains,
+        "len_sub": len_sub,
+        "len_of_subdomains": len_of_subdomains,
         "result": 1
     }
 
     for key, value in data.items():
-        if key == "website_url":
+        if key in {"website_url", "sim_lev", "sim_fuzz", "num_of_subdomains", "len_of_subdomains"}:
             continue
         validated_value = validate_value(value)
         if validated_value is None:
             data = None
             break
         data[key] = validated_value
-    
     return open_page_rank, data
