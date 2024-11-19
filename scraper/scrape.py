@@ -60,8 +60,8 @@ def setup_driver():
 def fetch_headers(driver):
     try:
         return driver.execute_script("return window.performance.getEntries()")
-    except Exception as e:
-        logging.error(f"Error fetching headers: {e}")
+    except Exception:
+        logging.error("Error fetching headers")
         return None
 
 def scraper(csv_path, start, end):
@@ -119,13 +119,13 @@ def parser():
 
 
 def parse_data(url, html_content, cookies, headers):
-    try:
+    # try:
         data = collect_data(url, html_content)
         if data is not None:
             append_html_to_json(url, html_content, cookies, headers, data)
-    except Exception as e:
-        logging.error(f"Error parsing data for URL {url}: {e}")
-        return "ERROR"
+    # except Exception as e:
+    #     logging.error(f"Error parsing data for URL {url}: {e}")
+    #     return "ERROR"
 
 output_file = 'complete_data.json'
 
