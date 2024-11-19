@@ -904,6 +904,9 @@ def is_brand_impersonation_fuzzy(url):
             current = 0
             current_similarity = max(current_similarity, similarity)
     
+    if subdomains == []:
+        return current, current_similarity
+    
     for brand in KNOWN_BRANDS_DOMAINS:
         for subdomain in subdomains:
             similarity = fuzz.ratio(subdomain, brand)
@@ -916,6 +919,8 @@ def is_brand_impersonation_fuzzy(url):
 
 def num_subdomains(url):
     _, subdomains = extract_domain_and_subdomains(url)
+    if subdomains is None:
+        return 1, 0
     if len(subdomains) in {0, 1}:
         return 1, 0
     elif len(subdomains) > 1:
@@ -923,14 +928,15 @@ def num_subdomains(url):
 
 def length_of_subdomains(url):
     subdomains = tldextract.extract(url).subdomain
-    length = len(subdomains) if subdomains else 0
-    if subdomains:
-        if len(subdomains) < 8:
-            return 1, length
-        elif 8 <= len(subdomains) <= 15:
-            return 0, length
-        else:
-            return -1, length
+    if subdomains is None:
+        return 1, 0
+    length = len(subdomains)
+    if len(subdomains) < 8:
+        return 1, length
+    elif 8 <= len(subdomains) <= 15:
+        return 0, length
+    else:
+        return -1, length
 
 ########################################################################################
 
