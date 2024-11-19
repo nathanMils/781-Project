@@ -120,9 +120,9 @@ def parser():
 
 def parse_data(url, html_content, cookies, headers):
     try:
-        data = collect_data(url, html_content)
+        open_rank, data = collect_data(url, html_content)
         if data is not None:
-            append_html_to_json(url, html_content, cookies, headers, data)
+            append_html_to_json(url, html_content, cookies, headers, open_rank, data)
     except Exception as e:
         logging.error(f"Error parsing data for URL {url}: {e}")
         return "ERROR"
@@ -132,7 +132,7 @@ output_file = 'complete_data.json'
 def generate_unique_id():
     return str(uuid.uuid4())
 
-def append_html_to_json(url, html_content, cookies, headers, data):
+def append_html_to_json(url, html_content, cookies, headers, open_rank, data):
     data = {
         'id': generate_unique_id(),
         'url': url,
@@ -140,6 +140,7 @@ def append_html_to_json(url, html_content, cookies, headers, data):
         'html': html_content,
         'cookies': cookies,
         'headers': headers,
+        'open_rank': open_rank,
         'data': data
     }
 
