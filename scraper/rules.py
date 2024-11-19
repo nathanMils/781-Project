@@ -598,7 +598,7 @@ def is_web_traffic(data):
     global_rank = entry['rank']
         
     if global_rank is not None:
-        global_rank = global_rank.to_int()
+        global_rank = int(global_rank)
         if global_rank < 100000:
             return 1
         else:
