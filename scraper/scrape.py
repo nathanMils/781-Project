@@ -24,8 +24,8 @@ from scraper.rules import collect_data
 data_queue = queue.Queue()
 
 def setup_logging():
-    log_format = '%(asctime)s - %(name)s - %(levelname)s - %(lineno) - %(message)sd'
-    coloredlogs.install(level='INFO', fmt=log_format)
+    log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    coloredlogs.install(level='DEBUG', fmt=log_format)
 
 def get_chromedriver_path():
     chromedriver_path = os.getenv('CHROMEDRIVER_PATH')

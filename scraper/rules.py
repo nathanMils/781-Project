@@ -687,12 +687,8 @@ def is_website_indexed(url):
 # STATUS: FINISHED
 def is_google_index(url):
     """Determines if the URL is indexed by Google."""
-    domain = urlparse(url).netloc
 
-    if domain.startswith("www."):
-        domain = domain[4:]
-
-    data = is_website_indexed(domain)
+    data = is_website_indexed(url)
 
     if not data:
         return -1
