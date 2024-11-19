@@ -114,6 +114,7 @@ def parser():
 def parse_data(url, html_content, cookies, headers):
     try:
         data = collect_data(url, html_content)
+        print("issue here")
         if data is not None:
             append_html_to_json(url, html_content, cookies, headers, data)
     except Exception as e:
