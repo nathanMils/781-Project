@@ -630,7 +630,6 @@ def get_open_page_rank(url):
 ## STATUS: FINISHED
 def is_page_rank(data):
     """Determines if the URL has a suspicious page rank."""
-    logging.info(f"Page rank data: {data}")
     page_rank = data.get('response', [{}])[0].get('page_rank_decimal', None)
     
     if page_rank is None:
@@ -805,7 +804,7 @@ def collect_data(url, html):
         return None
     
     open_page_rank = get_open_page_rank(url)
-    
+    logging.info(f"Page rank data: {open_page_rank}")
     data = {
         "website_url": url,
         "having_ip_address": is_having_ip(url),
