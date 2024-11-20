@@ -55,6 +55,12 @@ def setup_driver():
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--no-sandbox')
+
+    extension_path = "/home/nathan/781-Project/local-chrome-extension"
+
+    # Set up Chrome options
+    chrome_options = Options()
+    chrome_options.add_argument(f"--load-extension={extension_path}")
     driver = webdriver.Chrome(service=Service(get_chromedriver_path()), options=options)
     return driver
 
@@ -186,10 +192,11 @@ def append_html_to_json(url, html_content, cookies, headers, open_rank, data):
 
     logging.info(f"Appended HTML content for {url} in {output_file}")
 
+# START DETECTOR BEFORE HAND poetry run ./src/main.py
 def main():
     load_dotenv(dotenv_path='./.env')
     setup_logging()
-    scraper_thread = threading.Thread(target=scraper, args=('common_crawl/data/', 0, 2200, True))
+    scraper_thread = threading.Thread(target=scraper, args=('/data/test_final/live_test.csv', 0, 100, True))
     parser_thread = threading.Thread(target=parser)
     scraper_thread.start()
     parser_thread.start()

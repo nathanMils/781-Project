@@ -46,5 +46,55 @@ This project is organized into various directories and files that facilitate mac
 - `poetry.lock` and `pyproject.toml`: Used for dependency management and Python project configuration with Poetry.
 - `.gitignore`: Specifies files or directories to exclude from version control, such as temporary files or dependencies.
 
+## Setting Up Poetry
+
+To set up Poetry for managing dependencies and the Python environment, follow these steps:
+
+1. **Install Poetry**:
+    - Follow the official installation guide at [Poetry Installation](https://python-poetry.org/docs/#installation) to install Poetry on your system.
+
+2. **Install Dependencies**:
+    - Navigate to the root directory of the project.
+    - Run the following command to install the dependencies specified in `pyproject.toml`:
+      ```sh
+      poetry install
+      ```
+
+3. **Activate the Virtual Environment**:
+    - To activate the virtual environment created by Poetry, use:
+      ```sh
+      poetry shell
+      ```
+
+4. **Add New Dependencies**:
+    - To add new dependencies to the project, use:
+      ```sh
+      poetry add <package-name>
+      ```
+
+5. **Update Dependencies**:
+    - To update the dependencies to their latest versions, run:
+      ```sh
+      poetry update
+      ```
+
+By following these steps, you will have a consistent and isolated environment for your project, ensuring that all dependencies are managed effectively.
+
+## Describe the model selection: poetry run ./src/main.py
+
+#### Requires Python 3.10^
+The model selection process involves the following steps:
+
+1. **Data Preparation**: The `prepare` function is called to prepare and load the model in the current environment.
+4. **User Input for Model Selection**: The user is prompted to select a model type from the available options:
+    - `1` for Decision Tree
+    - `2` for XGBoost
+    - `3` for Logistic Regression
+5. **Model Type Assignment**: Based on the user's input, the corresponding model type is assigned to the `MODEL_TYPE` variable. If an invalid option is selected, a `ValueError` is raised.
+
+
+## Describe the model selection: when running 
+
 ## Live detection mechanism requirements:
-- Chrome
+- Chrome Driver -> environment var: CHROMEDRIVER_PATH="/home/nathan/chromedriver-linux64/chromedriver"
+- SERPER API KEY: I left one in the .env file
