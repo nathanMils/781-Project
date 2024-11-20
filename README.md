@@ -93,7 +93,42 @@ The model selection process involves the following steps:
 5. **Model Type Assignment**: Based on the user's input, the corresponding model type is assigned to the `MODEL_TYPE` variable. If an invalid option is selected, a `ValueError` is raised.
 
 
-## Describe the model selection: when running 
+## Describe the OpenPhish, Phishtank and common crawl data used for this project
+
+### OpenPhish
+OpenPhish provides a comprehensive and up-to-date feed of phishing URLs. This dataset is used to identify and analyze phishing websites, helping to build robust detection models. The data includes URLs, timestamps, and other relevant metadata.
+
+### Phishtank
+Phishtank is a community-driven platform where users can submit and verify phishing URLs. The dataset from Phishtank is utilized to enhance the diversity and accuracy of the phishing detection models. It includes verified phishing URLs along with detailed information about each URL.
+
+### Common Crawl
+Common Crawl offers a vast repository of web data that is freely accessible. For this project, datasets from Common Crawl are used to gather a wide range of web pages, both benign and malicious. This helps in creating a balanced dataset for training and testing the machine learning models. The data includes raw HTML, metadata, and other relevant web content.
+
+## Data Collection and Directory Structure
+
+### OpenPhish Feed
+The OpenPhish feed is a crucial component of this project, providing a comprehensive and up-to-date list of phishing URLs. To collect data from OpenPhish:
+
+1. **Access the OpenPhish Feed**:
+    - Visit the [OpenPhish website](https://openphish.com) and subscribe to their feed service.
+    - They release 500 new urls everyday
+
+2. **Download and Store Data**:
+    - Use the provided API key to download the phishing URLs and related metadata.
+    - Store the downloaded data in the `data/phishtank/` directory for further processing and analysis.
+
+### Common Crawl Data (October 2024)
+The Common Crawl data used in this project is from October 2024. This dataset includes a wide range of web pages, both benign and malicious, which helps in creating a balanced dataset for training and testing the machine learning models.
+
+1. **Access the Common Crawl Dataset**:
+    - Visit the [Common Crawl website](https://commoncrawl.org) and navigate to the data archives.
+    - Locate the dataset for October 2024.
+
+2. **Download and Store Data**:
+    - Download the relevant WARC files or use the Common Crawl API to fetch the data.
+    - Store the downloaded data in the `common_crawl/` directory for further processing and analysis.
+
+By following these steps, you can ensure that the necessary datasets are collected and organized properly within the project directory structure.
 
 ## Live detection mechanism requirements:
 - Chrome Driver -> environment var: CHROMEDRIVER_PATH="/home/nathan/chromedriver-linux64/chromedriver"
