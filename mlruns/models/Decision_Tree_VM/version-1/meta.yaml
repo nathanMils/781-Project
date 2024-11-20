@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1732078638918
+current_stage: None
+description: ''
+last_updated_timestamp: 1732078638918
+name: Decision_Tree_VM
+run_id: e109b72f5ae3405eab9d5070d5013292
+run_link: ''
+source: file:////home/nathan/781-Project/configs/models/e109b72f5ae3405eab9d5070d5013292/artifacts/model
+status: READY
+status_message: null
+storage_location: file:////home/nathan/781-Project/configs/models/e109b72f5ae3405eab9d5070d5013292/artifacts/model
+user_id: null
+version: 1

@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1732079366188
+current_stage: None
+description: ''
+last_updated_timestamp: 1732079366188
+name: Logistic_Regression_VM
+run_id: ef4c37f592e6493e9f103bf7521537c4
+run_link: ''
+source: file:///home/nathan/781-Project/configs/models/8dc6cd92608c4b88bad43458a79334af/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///home/nathan/781-Project/configs/models/8dc6cd92608c4b88bad43458a79334af/artifacts/model
+user_id: null
+version: 1

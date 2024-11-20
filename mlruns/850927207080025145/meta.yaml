@@ -1,0 +1,6 @@
+artifact_location: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/850927207080025145
+creation_time: 1732078233061
+experiment_id: '850927207080025145'
+last_update_time: 1732078233061
+lifecycle_stage: active
+name: XGBoost_KFOLD

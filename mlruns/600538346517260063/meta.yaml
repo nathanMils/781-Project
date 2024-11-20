@@ -1,0 +1,6 @@
+artifact_location: file:///C:\Users\natei\Desktop\COS 781 Project\781-Project\configs\models
+creation_time: 1732077912216
+experiment_id: '600538346517260063'
+last_update_time: 1732077912216
+lifecycle_stage: active
+name: XGBoost_GRID_SEARCH

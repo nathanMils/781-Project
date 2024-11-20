@@ -1,9 +1,10 @@
 import csv
 import json
 
-input_json_file = './data/collected/collected_phish_data.json'
+input_json_file = './data/collected/json_scraped/collected_phish_data_5.json'
 output_csv_file = 'output.csv'
 
+# id,timestamp,open_rank_domain,page_rank_integer,page_rank_decimal,website_url,having_ip_address,url_length,shortining_service,having_at_symbol,double_slash_redirecting,prefix_suffix,having_sub_domain,sslfinal_state,domain_registration_length,favicon,port,https_token,request_url,url_of_anchor,links_in_tags,sfh,submitting_to_email,abnormal_url,redirect,on_mouseover,rightclick,popupwindow,iframe,age_of_domain,dnsrecord,web_traffic,page_rank,google_index,links_pointing_to_page,statistical_report,has_numbers,special_characters,lev,sim_lev,fuzzy,sim_fuzz,num_sub,num_of_subdomains,result
 headers = [
     "id", "timestamp", "open_rank_domain", "page_rank_integer", "page_rank_decimal", 
     "website_url", "having_ip_address", "url_length", "shortining_service", "having_at_symbol", 
@@ -11,7 +12,8 @@ headers = [
     "domain_registration_length", "favicon", "port", "https_token", "request_url", 
     "url_of_anchor", "links_in_tags", "sfh", "submitting_to_email", "abnormal_url", "redirect", 
     "on_mouseover", "rightclick", "popupwindow", "iframe", "age_of_domain", "dnsrecord", "web_traffic", 
-    "page_rank", "google_index", "links_pointing_to_page", "statistical_report", "result"
+    "page_rank", "google_index", "links_pointing_to_page", "statistical_report", "has_numbers", "special_characters",
+    "lev", "sim_lev", "fuzzy", "sim_fuzz", "num_sub", "num_of_subdomains","len_sub", "len_of_subdomains", "result"
 ]
 
 with open(input_json_file, 'r') as file:

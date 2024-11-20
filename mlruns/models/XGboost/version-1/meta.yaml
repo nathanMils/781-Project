@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1732078365504
+current_stage: None
+description: ''
+last_updated_timestamp: 1732078365504
+name: XGboost
+run_id: 7ed00c8caf904081911658895a295150
+run_link: ''
+source: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/850927207080025145/7ed00c8caf904081911658895a295150/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/850927207080025145/7ed00c8caf904081911658895a295150/artifacts/model
+user_id: null
+version: 1

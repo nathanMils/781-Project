@@ -922,7 +922,7 @@ def num_subdomains(url):
     if subdomains is None:
         return 1, 0
     if len(subdomains) in {0, 1}:
-        return 1, 0
+        return 1, len(subdomains)
     elif len(subdomains) > 1:
         return -1, len(subdomains)
 

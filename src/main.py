@@ -12,14 +12,12 @@ def configure():
 
 def main():
     load_dotenv(dotenv_path='./.env')
-    MODEL_TYPE = os.getenv("MODEL_TYPE")
-    MODEL_VERSION = os.getenv("MODEL_VERSION")
-    DATASET = os.getenv("DATASET")
+    MODEL_TYPE = os.getenv("MODEL_TYPE_")
+    MODEL_VERSION = os.getenv("MODEL_VERSION_")
     print("Starting Project")
     print(f"Model Type: {MODEL_TYPE}")
     print(f"Model Version: {MODEL_VERSION}")
-    print(f"Dataset: {DATASET}")
-    start_server(model_uri=f"models:/{MODEL_TYPE}_{DATASET}/{MODEL_VERSION}", dataset=DATASET)
+    start_server(model_uri=f"models:/{MODEL_TYPE}/{MODEL_VERSION}")
 
 if __name__ == "__main__":
     configure()
