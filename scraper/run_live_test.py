@@ -72,7 +72,7 @@ def fetch_headers(driver):
         return None
     
 def predict(url, html):
-    response = requests.post('http://127.0.0.1:5000/collect', json={'url': url, 'html': html})
+    response = requests.post('http://127.0.0.1:5000/predict_url', json={'url': url, 'html': html})
     if response.status_code != 200:
         logging.error(f"Error in collecting data for URL: {url}")
         return None
