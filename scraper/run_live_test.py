@@ -67,6 +67,17 @@ def fetch_headers(driver):
     except Exception:
         logging.error("Error fetching headers")
         return None
+    
+def predict(url, html):
+    response = requests.post('http://127.0.0.1:5000/collect', json={'url': url, 'html': html})
+    if response.status_code != 200:
+        logging.error(f"Error in collecting data for URL: {url}")
+        return None
+    data = response.json()
+    if 'is_phishing' not in data:
+        logging.error(f"'is_phishing' attribute not found in response for URL: {url}")
+        return None
+    return data.get('is_phishing')
 
 def scraper(csv_path, start, end, randomize=False):
     chrome_options = Options()
@@ -84,13 +95,11 @@ def scraper(csv_path, start, end, randomize=False):
             raise e
 
     driver = initialize_driver()
-    urls = None
-    if randomize:
-        urls = pd.read_csv(csv_path)['url'].sample(n=end).tolist()
-    else:
-        urls = pd.read_csv(csv_path)['url'][start:end].tolist()
+    df = pd.read_csv(csv_path)
 
-    for url in urls:
+
+    for index, row in df.iterrows():
+        url = row['url']
         logging.info(f"Checking if URL {url} is reachable...")
         if not is_url_reachable(url):
             logging.info(f"Skipping URL {url} because it is not reachable.")
@@ -116,7 +125,7 @@ def scraper(csv_path, start, end, randomize=False):
             html_content = driver.page_source
             cookies = driver.get_cookies()
             headers = fetch_headers(driver)
-            data_queue.put({'url': url, 'html': html_content, 'cookies': cookies, 'headers': headers})
+            data_queue.put({'url': url, 'html': html_content, 'cookies': cookies, 'headers': headers, 'label': row['result']})
             logging.info(f"Waiting for the parser to process {url}...")
             data_queue.join()
             time.sleep(random.uniform(3, 5))
@@ -128,6 +137,7 @@ def scraper(csv_path, start, end, randomize=False):
     driver.quit()
 
 def parser():
+    
     while True:
         task = data_queue.get()
 
@@ -140,16 +150,24 @@ def parser():
         headers = task['headers']
         
         logging.info(f"Parsing data from {url}...")
-        parse_data(url, html_content, cookies, headers)
+        parse_data(url, html_content, cookies, headers, task['label'])
         
         data_queue.task_done()
 
-
-def parse_data(url, html_content, cookies, headers):
+count_correct = 0
+count_error = 0
+def parse_data(url, html_content, cookies, headers, label):
     try:
-        open_rank, data = collect_data(url, html_content)
-        if data is not None:
-            append_html_to_json(url, html_content, cookies, headers, open_rank, data)
+        prediction = predict(url, html_content)
+        
+        if  prediction in {0,-1} and label == -1:
+            count_correct += 1
+        elif prediction == 1 and label == 1:
+            count_correct += 1
+        else:
+            count_error += 1
+        
+        print(f"Correct: {count_correct}, Error: {count_error}")
     except Exception as e:
         logging.error(f"Error parsing data for URL {url}: {e}")
         return "ERROR"
@@ -202,6 +220,7 @@ def main():
     parser_thread.join()
 
     logging.info("Scraping and parsing complete.")
+    print(f"Correct: {count_correct}, Error: {count_error}")
 
 if __name__ == "__main__":
     main()
