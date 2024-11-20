@@ -57,7 +57,7 @@ def setup_driver():
     chrome_options.add_argument('--no-sandbox')
 
     extension_path = "/home/nathan/781-Project/local-chrome-extension"
-    chrome_options.add_argument(f"--load-extension={extension_path}")
+    options.add_argument(f"--load-extension={extension_path}")
     driver = webdriver.Chrome(service=Service(get_chromedriver_path()), options=options)
     return driver
 
