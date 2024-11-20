@@ -159,6 +159,7 @@ def parser():
 
 
 def parse_data(url, html_content, cookies, headers, label):
+    global count_correct, count_error
     try:
         prediction = predict(url, html_content)
         
