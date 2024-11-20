@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1732063438838
+current_stage: None
+description: ''
+last_updated_timestamp: 1732063438838
+name: Decision_Tree
+run_id: 904721088eb74d7a967dc6e074ee70e1
+run_link: ''
+source: file:///<ROOT>/781-Project/configs/models/904721088eb74d7a967dc6e074ee70e1/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///<ROOT>/781-Project/configs/models/904721088eb74d7a967dc6e074ee70e1/artifacts/model
+user_id: null
+version: 1

@@ -1,14 +1,14 @@
 aliases: []
-creation_timestamp: 1732078365504
+creation_timestamp: 1732081690994
 current_stage: None
 description: ''
-last_updated_timestamp: 1732078365504
-name: XGboost
-run_id: 7ed00c8caf904081911658895a295150
+last_updated_timestamp: 1732081690994
+name: XGBoost
+run_id: d61336b8bb03415ab1f14a76d2e0a9c8
 run_link: ''
-source: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/850927207080025145/7ed00c8caf904081911658895a295150/artifacts/model
+source: file:///C:\Users\natei\Desktop\COS 781 Project/781-Project/configs/models/d61336b8bb03415ab1f14a76d2e0a9c8/artifacts/model
 status: READY
 status_message: null
-storage_location: file:///c:/Users/natei/Desktop/COS 781 Project/781-Project/notebooks/../mlruns/850927207080025145/7ed00c8caf904081911658895a295150/artifacts/model
+storage_location: file:///C:\Users\natei\Desktop\COS 781 Project/781-Project/configs/models/d61336b8bb03415ab1f14a76d2e0a9c8/artifacts/model
 user_id: null
 version: 1

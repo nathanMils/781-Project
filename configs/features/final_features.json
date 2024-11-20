@@ -1,7 +1,5 @@
 [
     "page_rank_decimal",
-    "url_length",
-    "double_slash_redirecting",
     "prefix_suffix",
     "favicon",
     "request_url",
@@ -9,9 +7,6 @@
     "links_in_tags",
     "sfh",
     "submitting_to_email",
-    "abnormal_url",
-    "redirect",
-    "popupwindow",
     "iframe",
     "web_traffic",
     "page_rank",

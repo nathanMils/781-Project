@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import csv
 import pandas as pd
-from process import calculate
+from process import calculate, calculate_LGR
 import numpy as np
 
 import pandas as pd
@@ -11,11 +11,11 @@ import mlflow.pyfunc
 model = None
 mlflow.set_tracking_uri("./mlruns")
 
-dataset_type = None
+model_type = None
 
 import logging
 
-logger = logging.getLogger('flask_server.server')
+logger = logging.getLogger(__name__)
 
 import time
 import json
@@ -30,6 +30,12 @@ def time_run_check(func, *args):
 collected_data = []
 
 CSV_FILE_PATH = 'collected_data.csv'
+
+def calculate_by_model_type(url, html=None):
+    if model_type == "Logistic_Regression":
+        return calculate_LGR(url, html)
+    else:
+        return calculate(url, html)
 
 
 def write_to_csv(collected_data):
@@ -68,8 +74,15 @@ def predict():
         html = data.get('html')
         logger.info(f"URL: {url}")
 
-        characteristics, preprocess_time = time_run_check(calculate, url, html)
+        characteristics, preprocess_time = time_run_check(calculate_by_model_type, url, html)
         logger.info(f"Data: {characteristics}, Processing time: {preprocess_time}")
+
+        if characteristics is None:
+            return jsonify(
+                {
+                    "error": "Unable to process URL"
+                }
+            ), 400
 
         df = pd.DataFrame([characteristics])
 
@@ -91,9 +104,8 @@ def predict():
             elif isinstance(obj, list):
                 return [convert_to_int(v) for v in obj]  # Recursively apply for list
             else:
-                return obj  # Return the object as is if it's not int64 or float64
-
-                # Inside your function, use convert_to_int before returning the response
+                return obj
+            
         data_to_return = {
             "message": "URL tested successfully!",
             "is_phishing": predicted,
@@ -101,25 +113,24 @@ def predict():
             "preprocess_time": preprocess_time,
             "prediction_time": predict_time
         }
-
-        # Convert all values to standard Python types
         data_to_return = convert_to_int(data_to_return)
 
         return jsonify(data_to_return), 200
     except Exception as e:
         logger.error(f"Error: URL: {str(e)}")
-        logger.error("Exception occurred", exc_info=True)
+        logger.error("Exception occurred")
         return jsonify(
             {
                 "error": "Unable to predict URL"
             }
         ), 400
 
-def start_server(model_uri):
-    global model, dataset_type
+def start_server(model_uri, model_name):
+    global model, model_type
+    model_type = model_name
     model = mlflow.pyfunc.load_model(model_uri)
     logger.info("Starting Flask server")
-    app.run(debug=True, port=5000)
+    app.run(debug=False, port=5000)
 
 # To start the server, you would call:
 # start_server('runs:/<run_id>/model') where <run_id> is your MLflow run ID

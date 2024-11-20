@@ -1,0 +1,15 @@
+artifact_uri: file:///C:\Users\natei\Desktop\COS 781 Project\781-Project\configs\models/e5d32145609a446ebfb8adbfe05e3fd4/artifacts
+end_time: 1732095471088
+entry_point_name: ''
+experiment_id: '588434906205091978'
+lifecycle_stage: active
+run_id: e5d32145609a446ebfb8adbfe05e3fd4
+run_name: KFC_8_DT
+run_uuid: e5d32145609a446ebfb8adbfe05e3fd4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1732095467368
+status: 3
+tags: []
+user_id: natei

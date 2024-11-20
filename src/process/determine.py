@@ -723,8 +723,8 @@ def is_links_pointing_to_page(url, soup):
 ## List of top phishing domains and IPs
 # CloudFlare
 top_phishing_tlds = [
-    # Cheap and Open TLDs
-    ".xyz", ".top", ".club", ".online", ".shop", ".site", ".vip", ".buzz",
+    # Cheap and Open TLDs 
+    ".xyz", ".top", ".club", ".online", ".shop", ".site", ".vip", ".buzz", ".cyou"
 
     # Freenom TLDs (Free Domains)
     ".tk", ".ml", ".ga", ".cf", ".gq",
@@ -875,14 +875,15 @@ def is_brand_impersonation_lev(url):
     if domain in KNOWN_BRANDS_DOMAINS:
         return 1, 1
     current = 1
-    current_similarity = 100
+    current_similarity = 1
     for brand in KNOWN_BRANDS_DOMAINS:
         distance = check_brands(url, brand)
-        if distance < 0.2:
+        if distance < 0.28:
             return -1, distance
-        elif distance < current_similarity:
+        elif distance < 0.5:
             current = 0
-            current_similarity = distance
+        
+        current_similarity = min(current_similarity, distance)
 
     return current, current_similarity
 
@@ -904,7 +905,8 @@ def is_brand_impersonation_fuzzy(url):
             return -1, similarity
         elif similarity > 50:
             current = 0
-            current_similarity = max(current_similarity, similarity)
+            
+        current_similarity = max(current_similarity, similarity)
     
     if subdomains == []:
         return current, current_similarity
@@ -914,9 +916,10 @@ def is_brand_impersonation_fuzzy(url):
             similarity = fuzz.ratio(subdomain, brand)
             if similarity > 70:
                 return -1, similarity
-            elif similarity > current_similarity:
+            elif similarity > 50:
                 current = 0
-                current_similarity = similarity
+                
+            current_similarity = max(current_similarity, similarity)
     return current, current_similarity
 
 def num_subdomains(url):
@@ -1133,7 +1136,61 @@ def calculate(url, html):
     len_sub, len_of_subdomains = length_of_subdomains(url)
 
     data = {
-        "page_rank_decimal": is_page_rank(open_page_rank),
+        "page_rank_decimal": open_page_rank.get('response', [{}])[0].get('page_rank_decimal', None),
+        "shortining_service": is_shortening_service(url),
+        "favicon": is_favicon(url, soup),
+        "request_url": is_request_url(url, soup),
+        "url_of_anchor": is_url_of_anchor(url, soup),
+        "links_in_tags": is_links_in_tags(url, soup),
+        "iframe": is_iframe(soup),
+        "web_traffic": is_web_traffic(open_page_rank),
+        "page_rank": is_page_rank(open_page_rank),
+        "google_index": is_google_index(url),
+        "links_pointing_to_page": is_links_pointing_to_page(url, soup),
+        "sim_lev": sim_lev,
+        "sim_fuzz": sim_fuzz,
+        "num_of_subdomains": num_of_subdomains,
+        "len_sub": len_sub,
+        "len_of_subdomains": len_of_subdomains
+    }
+
+
+    for key, value in data.items():
+        if key in {"website_url", "sim_lev", "sim_fuzz", "num_of_subdomains", "len_of_subdomains", "page_rank_decimal"}:
+            continue
+        validated_value = validate_value(value)
+        if validated_value is None:
+            logger.info(f"Invalid value for key: {key}")
+            data = None
+            break
+        data[key] = validated_value
+    return data
+
+def calculate_LGR(url, html):
+    """Determines if a URL is a phishing website or not."""
+    if not check_if_valid(url):
+        logging.error(f"Invalid URL: {url}")
+        return None
+    response = check_if_reachable(url)
+    if not response:
+        logging.error(f"Unreachable URL: {url}")
+        return None
+    soup = parse_html_direct(html)
+    if not soup:
+        logging.error(f"Error parsing HTML content for URL: {url}")
+        return None
+    domain = get_whois(url)
+    if not domain:
+        logging.error(f"Error fetching WHOIS information for URL: {url}")
+        return None
+    
+    open_page_rank = get_open_page_rank(url)
+    logger.info(f"Page rank data: {open_page_rank}")
+    lev, sim_lev = is_brand_impersonation_lev(url)
+    fuzz, sim_fuzz = is_brand_impersonation_fuzzy(url)
+    len_sub, len_of_subdomains = length_of_subdomains(url)
+
+    data = {
         "url_length": is_url_long(url),
         "double_slash_redirecting": is_double(url),
         "prefix_suffix": is_prefix_suffix(url),
@@ -1153,12 +1210,8 @@ def calculate(url, html):
         "links_pointing_to_page": is_links_pointing_to_page(url, soup),
         "has_numbers": has_numbers_in_domain(url),
         "lev": lev,
-        "sim_lev": sim_lev,
         "fuzzy": fuzz,
-        "sim_fuzz": sim_fuzz,
-        "num_of_subdomains": num_of_subdomains,
         "len_sub": len_sub,
-        "len_of_subdomains": len_of_subdomains,
     }
 
     for key, value in data.items():
@@ -1166,6 +1219,7 @@ def calculate(url, html):
             continue
         validated_value = validate_value(value)
         if validated_value is None:
+            logger.error(f"Invalid value for key: {key}")
             data = None
             break
         data[key] = validated_value

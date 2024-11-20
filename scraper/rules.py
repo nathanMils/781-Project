@@ -721,8 +721,8 @@ def is_links_pointing_to_page(url, soup):
 ## List of top phishing domains and IPs
 # CloudFlare
 top_phishing_tlds = [
-    # Cheap and Open TLDs
-    ".xyz", ".top", ".club", ".online", ".shop", ".site", ".vip", ".buzz",
+    # Cheap and Open TLDs 
+    ".xyz", ".top", ".club", ".online", ".shop", ".site", ".vip", ".buzz", ".cyou"
 
     # Freenom TLDs (Free Domains)
     ".tk", ".ml", ".ga", ".cf", ".gq",
@@ -798,6 +798,7 @@ def homoglyph(url):
     
 # 4. Presence of Brand Name in the Domain - CUSTOM Approach
 
+import tldextract
 KNOWN_BRANDS_DOMAINS = [
     "microsoft",
     "apple",
@@ -871,16 +872,17 @@ def is_brand_impersonation_lev(url):
     """
     domain, _ = extract_domain_and_subdomains(url)
     if domain in KNOWN_BRANDS_DOMAINS:
-        return 1
+        return 0, 0.5
     current = 1
-    current_similarity = 100
+    current_similarity = 1
     for brand in KNOWN_BRANDS_DOMAINS:
         distance = check_brands(url, brand)
-        if distance < 0.2:
+        if distance < 0.28:
             return -1, distance
-        elif distance < current_similarity:
+        elif distance < 0.5:
             current = 0
-            current_similarity = distance
+        
+        current_similarity = min(current_similarity, distance)
 
     return current, current_similarity
 
@@ -893,7 +895,7 @@ def is_brand_impersonation_fuzzy(url):
     """
     domain, subdomains = extract_domain_and_subdomains(url)
     if domain in KNOWN_BRANDS_DOMAINS:
-        return 1
+        return 0, 30
     current = 1
     current_similarity = 0
     for brand in KNOWN_BRANDS_DOMAINS:
@@ -902,7 +904,8 @@ def is_brand_impersonation_fuzzy(url):
             return -1, similarity
         elif similarity > 50:
             current = 0
-            current_similarity = max(current_similarity, similarity)
+            
+        current_similarity = max(current_similarity, similarity)
     
     if subdomains == []:
         return current, current_similarity
@@ -912,9 +915,10 @@ def is_brand_impersonation_fuzzy(url):
             similarity = fuzz.ratio(subdomain, brand)
             if similarity > 70:
                 return -1, similarity
-            elif similarity > current_similarity:
+            elif similarity > 50:
                 current = 0
-                current_similarity = similarity
+                
+            current_similarity = max(current_similarity, similarity)
     return current, current_similarity
 
 def num_subdomains(url):

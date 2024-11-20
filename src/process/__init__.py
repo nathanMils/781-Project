@@ -1,1 +1,1 @@
-from .determine import calculate
+from .determine import calculate, calculate_LGR

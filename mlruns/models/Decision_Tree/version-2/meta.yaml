@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1732092941262
+current_stage: None
+description: ''
+last_updated_timestamp: 1732092941262
+name: Decision_Tree
+run_id: e8736f2755b34f3b9cce2f3f93d6fe3d
+run_link: ''
+source: file:///C:\Users\natei\Desktop\COS 781 Project\781-Project\configs\models/e8736f2755b34f3b9cce2f3f93d6fe3d/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///C:\Users\natei\Desktop\COS 781 Project\781-Project\configs\models/e8736f2755b34f3b9cce2f3f93d6fe3d/artifacts/model
+user_id: null
+version: 2
