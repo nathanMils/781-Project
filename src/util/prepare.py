@@ -36,8 +36,8 @@ def prepare():
         ]
         target_files = [
             './mlruns/models/Decision_Tree/version-1/meta.yaml',
-            './mlruns/models/XGBoost/version-1/meta.yaml',
-            './mlruns/models/Logistic_Regression/version-1/meta.yaml',
+            './mlruns/models/XGBoost/version-4/meta.yaml',
+            './mlruns/models/Logistic_Regression/version-4/meta.yaml',
         ]
         replace_root_keyword(yaml_files, target_files, project_root)
     else:

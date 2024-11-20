@@ -7,6 +7,12 @@ from dotenv import load_dotenv
 
 SEED = 21
 
+DEFAULT_VERSIONS = {
+    "Decision_Tree": 1,
+    "XGBoost": 4,
+    "Logistic_Regression": 4
+}
+
 def configure():
     setup_logging()
 
@@ -23,11 +29,7 @@ def main():
     else:
         raise ValueError("Invalid model type selected")
     
-    model_version = input("Select model version (e.g., 1, 2, 3): ")
-    if model_version.isdigit():
-        MODEL_VERSION = model_version
-    else:
-        raise ValueError("Invalid model version selected")
+    MODEL_VERSION = DEFAULT_VERSIONS[MODEL_TYPE]
     print("Starting Project")
     print(f"Model Type: {MODEL_TYPE}")
     print(f"Model Version: {MODEL_VERSION}")

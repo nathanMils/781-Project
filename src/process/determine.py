@@ -1113,10 +1113,6 @@ def calculate(url, html):
     if not check_if_valid(url):
         logging.error(f"Invalid URL: {url}")
         return None
-    response = check_if_reachable(url)
-    if not response:
-        logging.error(f"Unreachable URL: {url}")
-        return None
     soup = parse_html_direct(html)
     if not soup:
         logging.error(f"Error parsing HTML content for URL: {url}")
@@ -1137,22 +1133,25 @@ def calculate(url, html):
 
     data = {
         "page_rank_decimal": open_page_rank.get('response', [{}])[0].get('page_rank_decimal', None),
-        "shortining_service": is_shortening_service(url),
+        "prefix_suffix": is_prefix_suffix(url),
         "favicon": is_favicon(url, soup),
-        "request_url": is_request_url(url, soup),
-        "url_of_anchor": is_url_of_anchor(url, soup),
-        "links_in_tags": is_links_in_tags(url, soup),
+        "submitting_to_email": is_submitting_to_email_direct(html, soup),
         "iframe": is_iframe(soup),
         "web_traffic": is_web_traffic(open_page_rank),
         "page_rank": is_page_rank(open_page_rank),
         "google_index": is_google_index(url),
-        "links_pointing_to_page": is_links_pointing_to_page(url, soup),
+        "lev": lev,
         "sim_lev": sim_lev,
+        "fuzzy": fuzz,
         "sim_fuzz": sim_fuzz,
         "num_of_subdomains": num_of_subdomains,
         "len_sub": len_sub,
-        "len_of_subdomains": len_of_subdomains
+        "len_of_subdomains": len_of_subdomains,
     }
+
+
+
+
 
 
     for key, value in data.items():
@@ -1166,14 +1165,14 @@ def calculate(url, html):
         data[key] = validated_value
     return data
 
+import pandas as pd
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+
 def calculate_LGR(url, html):
     """Determines if a URL is a phishing website or not."""
     if not check_if_valid(url):
         logging.error(f"Invalid URL: {url}")
-        return None
-    response = check_if_reachable(url)
-    if not response:
-        logging.error(f"Unreachable URL: {url}")
         return None
     soup = parse_html_direct(html)
     if not soup:
@@ -1190,32 +1189,33 @@ def calculate_LGR(url, html):
     fuzz, sim_fuzz = is_brand_impersonation_fuzzy(url)
     len_sub, len_of_subdomains = length_of_subdomains(url)
 
+    num_sub, num_of_subdomains = num_subdomains(url)
+
     data = {
-        "url_length": is_url_long(url),
-        "double_slash_redirecting": is_double(url),
+        "page_rank_decimal": open_page_rank.get('response', [{}])[0].get('page_rank_decimal', None),
+        "sim_lev": sim_lev,
+        "sim_fuzz": sim_fuzz,
+        "num_of_subdomains": num_of_subdomains,
+        "len_of_subdomains": len_of_subdomains,
         "prefix_suffix": is_prefix_suffix(url),
+        "having_sub_domain": is_having_sub_domain(url),
+        "domain_registration_length": is_domain_registration_length(domain),
         "favicon": is_favicon(url, soup),
         "request_url": is_request_url(url, soup),
         "url_of_anchor": is_url_of_anchor(url, soup),
         "links_in_tags": is_links_in_tags(url, soup),
         "sfh": is_sfh(url, soup),
         "submitting_to_email": is_submitting_to_email_direct(html, soup),
-        "abnormal_url": is_abnormal_url(url),
-        "redirect": is_redirect(response),
-        "popupwindow": is_popupwindow(soup),
         "iframe": is_iframe(soup),
+        "dnsrecord": is_dns_record(url),
         "web_traffic": is_web_traffic(open_page_rank),
-        "page_rank": is_page_rank(open_page_rank),
         "google_index": is_google_index(url),
-        "links_pointing_to_page": is_links_pointing_to_page(url, soup),
-        "has_numbers": has_numbers_in_domain(url),
-        "lev": lev,
         "fuzzy": fuzz,
         "len_sub": len_sub,
     }
 
     for key, value in data.items():
-        if key in {"website_url", "sim_lev", "sim_fuzz", "num_of_subdomains", "len_of_subdomains"}:
+        if key in {"website_url", "sim_lev", "sim_fuzz", "num_of_subdomains", "len_of_subdomains", "page_rank_decimal"}:
             continue
         validated_value = validate_value(value)
         if validated_value is None:

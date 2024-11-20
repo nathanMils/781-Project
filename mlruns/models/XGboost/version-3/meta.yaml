@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1732108266057
+current_stage: None
+description: ''
+last_updated_timestamp: 1732108266057
+name: XGBoost
+run_id: de5eb7d8c410431db06443a6a42b94cb
+run_link: ''
+source: file:///C:\Users\natei\Desktop\COS 781 Project\781-Project\configs\models/de5eb7d8c410431db06443a6a42b94cb/artifacts/model
+status: READY
+status_message: null
+storage_location: file:///C:\Users\natei\Desktop\COS 781 Project\781-Project\configs\models/de5eb7d8c410431db06443a6a42b94cb/artifacts/model
+user_id: null
+version: 3

@@ -1,0 +1,15 @@
+artifact_uri: file:///C:\Users\natei\Desktop\COS 781 Project\781-Project\configs\models/d50fbb7ed7d24cccb0256b700997d6aa/artifacts
+end_time: 1732110122393
+entry_point_name: ''
+experiment_id: '576681483655855462'
+lifecycle_stage: active
+run_id: d50fbb7ed7d24cccb0256b700997d6aa
+run_name: HPO_14_DT
+run_uuid: d50fbb7ed7d24cccb0256b700997d6aa
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1732110114104
+status: 3
+tags: []
+user_id: natei

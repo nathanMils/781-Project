@@ -117,7 +117,7 @@ def predict():
 
         return jsonify(data_to_return), 200
     except Exception as e:
-        logger.error(f"Error: URL: {str(e)}")
+        logger.error(f"Error: URL: {str(e)}, {url}", exc_info=True)
         logger.error("Exception occurred")
         return jsonify(
             {

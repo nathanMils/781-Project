@@ -46,3 +46,5 @@ This project is organized into various directories and files that facilitate mac
 - `poetry.lock` and `pyproject.toml`: Used for dependency management and Python project configuration with Poetry.
 - `.gitignore`: Specifies files or directories to exclude from version control, such as temporary files or dependencies.
 
+## Live detection mechanism requirements:
+- Chrome
