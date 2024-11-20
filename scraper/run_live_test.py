@@ -24,6 +24,9 @@ from scraper.rules import collect_data
 # Parallelism
 data_queue = queue.Queue()
 
+count_correct = 0
+count_error = 0
+
 def setup_logging():
     log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     coloredlogs.install(level='INFO', fmt=log_format)
@@ -154,8 +157,7 @@ def parser():
         
         data_queue.task_done()
 
-count_correct = 0
-count_error = 0
+
 def parse_data(url, html_content, cookies, headers, label):
     try:
         prediction = predict(url, html_content)
