@@ -24,6 +24,10 @@ from scraper.rules import collect_data
 # Parallelism
 data_queue = queue.Queue()
 
+tp = 0
+fp = 0
+tn = 0
+fn = 0
 count_correct = 0
 count_error = 0
 
@@ -163,12 +167,25 @@ def parse_data(url, html_content, cookies, headers, label):
     try:
         prediction = predict(url, html_content)
         
-        if  prediction in {0,-1} and label == -1:
+        global tp, fp, tn, fn
+
+        if prediction == 1 and label == 1:
+            tp += 1
             count_correct += 1
-        elif prediction == 1 and label == 1:
-            count_correct += 1
-        else:
+        elif prediction == 1 and label == -1:
+            fp += 1
             count_error += 1
+        elif prediction in {0, -1} and label == -1:
+            tn += 1
+            count_correct += 1
+        elif prediction in {0, -1} and label == 1:
+            fn += 1
+            count_error += 1
+
+        total = tp + fp + tn + fn
+        accuracy = (tp + tn) / total if total > 0 else 0
+
+        print(f"TP: {tp}, FP: {fp}, TN: {tn}, FN: {fn}, Accuracy: {accuracy:.2f}")
         
         print(f"Correct: {count_correct}, Error: {count_error}")
     except Exception as e:
