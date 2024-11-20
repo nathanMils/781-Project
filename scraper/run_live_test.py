@@ -196,7 +196,7 @@ def append_html_to_json(url, html_content, cookies, headers, open_rank, data):
 def main():
     load_dotenv(dotenv_path='./.env')
     setup_logging()
-    scraper_thread = threading.Thread(target=scraper, args=('/data/test_final/live_test.csv', 0, 100, True))
+    scraper_thread = threading.Thread(target=scraper, args=('data/test_final/live_test.csv', 0, 100, True))
     parser_thread = threading.Thread(target=parser)
     scraper_thread.start()
     parser_thread.start()
